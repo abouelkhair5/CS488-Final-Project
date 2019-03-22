@@ -56,3 +56,19 @@ private:
   glm::vec3 m_pos;
   double m_size;
 };
+
+class NonhierCylinder : public Primitive {
+public:
+    NonhierCylinder(const glm::vec3& pos, double xradius, double yradius, double height)
+      : m_pos(pos), m_xradius(xradius), m_yradius(yradius), m_height(height)
+    {
+    }
+    virtual bool intersect(const glm::vec3 eye, const glm::vec3 direction, double &t, glm::vec3 &normal);
+    virtual ~NonhierCylinder();
+
+private:
+    glm::vec3 m_pos;
+    double m_xradius;
+    double m_yradius;
+    double m_height;
+};

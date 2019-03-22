@@ -50,8 +50,10 @@ bool NonhierSphere::intersect(const glm::vec3 ray_origin, const glm::vec3 ray_di
 
 	// now we solve the quadratic equation
 	size_t nroots = quadraticRoots(a, b, c, roots);
+	double min_root = std::min(roots[0], roots[1]);
+	double max_root = std::max(roots[0], roots[1]);
 
-	if(nroots <= 0 || std::max(roots[0], roots[1]) < EPSILON)
+	if(nroots <= 0 || max_root < EPSILON)
 	{
 		// no roots so no intesection
 		// both roots negative then sphere behind eye and we don't show it
@@ -61,7 +63,7 @@ bool NonhierSphere::intersect(const glm::vec3 ray_origin, const glm::vec3 ray_di
 	// there's at least one positive root
 	// if the closer intersection is in front of the ray pick that
 	// other wise pick the other one
-	t = (std::min(roots[0], roots[1]) > EPSILON)? std::min(roots[0], roots[1]) : std::max(roots[0], roots[1]);
+	t = (min_root > EPSILON)? min_root : max_root);
 
 	glm::vec3 point_of_intersection = ray_origin + (float)t * ray_direction;
 	normal = glm::normalize(point_of_intersection - m_pos);
@@ -208,6 +210,72 @@ bool NonhierBox::intersect(const glm::vec3 ray_origin, const glm::vec3 ray_direc
 		// ray origin (eye)
 		t = lower_t;
 		normal = close_normal;
+	}
+
+	return true;
+}
+
+NonhierCylinder::~NonhierCylinder()
+{
+}
+
+bool NonhierCylinder::intersect(const glm::vec3 eye, const glm::vec3 direction, double &t, glm::vec3 &normal)
+{
+	// using the equation x^2/p^2 + y^2/q^2 = 1 and eye + t * direction = point
+	// we get the following a b and c for solving a quadratic equation
+	double p_square = m_xradius * m_xradius;
+	double q_square = m_yradius * m_yradius;
+	double a = (q_square * (direction.x * direction.x)) + (p_square * (direction.y * direction.y));
+	double b = 2 * ((eye.x * direction.x * q_square) + (eye.y * direction.y * p_square));
+	double c = (q_square * eye.x * eye.x) + (p_square * eye.x * eye.x) - (p_square * q_square);
+
+	// solving the quadratic equation
+	double roots[2];
+	size_t num_roots = quadraticRoots(a, b, c, roots);
+
+	// finding a bound on t using z
+	double t_min_z = (m_pos.z - eye.z) / direction.z;
+	double t_max_z = (m_pos.z + m_height - eye.z) / direction.z;
+	if(t_max_z < t_min_z)
+	{
+		std::swap(t_min_z, t_max_z);
+	}
+
+	double min_root = std::min(roots[0], roots[1]);
+	double max_root = std::max(roots[0], roots[1]);
+
+	if(num_roots <= 0 || max_root < std::min(EPSILON, t_min_z) || min_root > t_max_z)
+	{
+		// if there are no roots or both roots are behind the eye
+		// ie t is negative return false
+		return false;
+	}
+
+	// now we know there exists a positive t that solves the quadratic eqn and satisfies the z range
+	// now we want the minimum positive t that satisfies all these conditions
+
+	double t_min = std::max(t_min_z, min_root);
+	double t_max = std::min(t_max_z, max_root);
+	t = (t_min > EPSILON)? t_min : t_max;
+
+	// finding the normal
+	if(t == t_min_z)
+	{
+		// if the point of intersection is on the bottom of the cylinder then the normal is pointing downwards
+		normal = glm::vec3(0, 0, -1);
+	}
+	else if(t == t_max_z)
+	{
+		// if it is on the top then the normal is pointing upwards
+		normal = glm::vec3(0, 0, 1);
+	}
+	else{
+		// the ray is intersecting with the walls of the cylinder the normal is pointing outwards starting from the center
+		glm::vec3 point_of_intersection = eye + t * direction;
+		glm::vec3 normal_vector = point_of_intersection - m_pos;
+		// the normal shouldn't have a z component
+		normal_vector[2] = 0;
+		normal = glm::normalize(normal_vector);
 	}
 
 	return true;
