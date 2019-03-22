@@ -233,18 +233,18 @@ bool NonhierCylinder::intersect(const glm::vec3 eye, const glm::vec3 direction, 
 	double roots[2];
 	size_t num_roots = quadraticRoots(a, b, c, roots);
 
-	// finding a bound on t using z
+	/*// finding a bound on t using y
 	double t_min_y = (m_pos.y - eye.y) / direction.y;
 	double t_max_y = (m_pos.y + m_height - eye.y) / direction.y;
 	if(t_max_y < t_min_y)
 	{
 		std::swap(t_min_y, t_max_y);
-	}
+	}*/
 
 	double min_root = std::min(roots[0], roots[1]);
 	double max_root = std::max(roots[0], roots[1]);
 
-	if(num_roots <= 0 || max_root < std::min(EPSILON, t_min_y) || min_root > t_max_y)
+	if(num_roots <= 0 || max_root < EPSILON)//std::min(EPSILON, t_min_y) || min_root > t_max_y)
 	{
 		// if there are no roots or both roots are behind the eye
 		// ie t is negative return false
@@ -254,11 +254,12 @@ bool NonhierCylinder::intersect(const glm::vec3 eye, const glm::vec3 direction, 
 	// now we know there exists a positive t that solves the quadratic eqn and satisfies the z range
 	// now we want the minimum positive t that satisfies all these conditions
 
-	double t_min = std::max(t_min_y, min_root);
-	double t_max = std::min(t_max_y, max_root);
-	t = (t_min > EPSILON)? t_min : t_max;
+//	double t_min = std::max(t_min_y, min_root);
+//	double t_max = std::min(t_max_y, max_root);
+//	t = (t_min > EPSILON)? t_min : t_max;
 
-	// finding the normal
+  t = (min_root > EPSILON)? min_root : max_root;
+	/*// finding the normal
 	if(t == t_min_y)
 	{
 		// if the point of intersection is on the bottom of the cylinder then the normal is pointing downwards
@@ -273,12 +274,11 @@ bool NonhierCylinder::intersect(const glm::vec3 eye, const glm::vec3 direction, 
 		// the ray is intersecting with the walls of the cylinder the normal is pointing outwards starting from the center
 		glm::vec3 point_of_intersection = eye + float(t) * direction;
 		normal = glm::normalize(point_of_intersection - m_pos);
-	}
+	}*/
 
-  glm::vec3 point_of_intersection = eye + float(t) * direction;
-  glm::vec3 normal_direction = glm::normalize(point_of_intersection - m_pos);
-  normal[0] = normal_direction[0];
+  glm::vec3 point_of_intersection = normalize(eye + float(t) * direction);
+  normal[0] = point_of_intersection[0];
   normal[1] = 0;
-  normal[2] = normal_direction[2];
+  normal[2] = point_of_intersection[2];
   return true;
 }
