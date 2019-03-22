@@ -256,11 +256,12 @@ bool NonhierCylinder::intersect(const glm::vec3 eye, const glm::vec3 direction, 
 	// now we know there exists a positive t that solves the quadratic eqn and satisfies the z range
 	// now we want the minimum positive t that satisfies all these conditions
 
-	double t_min = std::max(t_min_y, min_root);
-	double t_max = std::min(t_max_y, max_root);
-	t = (t_min > EPSILON)? t_min : t_max;
+//	double t_min = std::max(t_min_y, min_root);
+//	double t_max = std::min(t_max_y, max_root);
+//	t = (t_min > EPSILON)? t_min : t_max;
 
-	// finding the normal
+  t = (min_root > EPSILON)? min_root : max_root;
+	/*// finding the normal
 	if(t == t_min_y)
 	{
 		// if the point of intersection is on the bottom of the cylinder then the normal is pointing downwards
@@ -275,8 +276,10 @@ bool NonhierCylinder::intersect(const glm::vec3 eye, const glm::vec3 direction, 
 		// the ray is intersecting with the walls of the cylinder the normal is pointing outwards starting from the center
 		glm::vec3 point_of_intersection = eye + float(t) * direction;
 		normal = glm::normalize(point_of_intersection - m_pos);
-		normal[1] = 0;
-	}
+	}*/
 
+  glm::vec3 point_of_intersection = eye + float(t) * direction;
+  normal = glm::normalize(point_of_intersection - m_pos);
+  normal[1] = 0;
   return true;
 }
