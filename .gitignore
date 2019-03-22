@@ -1,2 +1,6 @@
 Proposal/proposal.log
 Proposal/proposal.synctex.gz
+.DS_Store
+.idea/
+CMakeLists.txt
+cmake-build-debug/
