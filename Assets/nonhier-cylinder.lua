@@ -12,7 +12,7 @@ scene_root:add_child(c1)
 c1:set_material(mat1)
 
 s2 = gr.nh_sphere('s2', {200, 50, -100}, 150)
-scene_root:add_child(s2)
+--scene_root:add_child(s2)
 s2:set_material(mat1)
 
 s3 = gr.nh_sphere('s3', {0, -1200, -500}, 1000)
@@ -20,15 +20,15 @@ scene_root:add_child(s3)
 s3:set_material(mat2)
 
 b1 = gr.nh_box('b1', {-200, -125, 0}, 100)
-scene_root:add_child(b1)
+--scene_root:add_child(b1)
 b1:set_material(mat4)
 
 s4 = gr.nh_sphere('s4', {-100, 25, -300}, 50)
-scene_root:add_child(s4)
+--scene_root:add_child(s4)
 s4:set_material(mat3)
 
 s5 = gr.nh_sphere('s5', {0, 100, -250}, 25)
-scene_root:add_child(s5)
+--scene_root:add_child(s5)
 s5:set_material(mat1)
 
 -- A small stellated dodecahedron.
