@@ -5,3 +5,4 @@ Proposal/proposal.synctex.gz
 CMakeLists.txt
 cmake-build-debug/
 build/Debug/*
+Proposal/._proposal.tex
