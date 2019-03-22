@@ -276,7 +276,9 @@ bool NonhierCylinder::intersect(const glm::vec3 eye, const glm::vec3 direction, 
 	}
 
   glm::vec3 point_of_intersection = eye + float(t) * direction;
-  normal = glm::normalize(point_of_intersection - m_pos);
+  glm::vec3 normal_direction = glm::normalize(point_of_intersection - m_pos);
+  normal[0] = normal_direction[0]
   normal[1] = 0;
+  normal[2] = normal_direction[2]
 	return true;
 }
