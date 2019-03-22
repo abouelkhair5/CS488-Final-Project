@@ -4,3 +4,4 @@ Proposal/proposal.synctex.gz
 .idea/
 CMakeLists.txt
 cmake-build-debug/
+build/Debug/*
