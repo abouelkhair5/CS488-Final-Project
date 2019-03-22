@@ -227,7 +227,7 @@ bool NonhierCylinder::intersect(const glm::vec3 eye, const glm::vec3 direction, 
 	double q_square = m_yradius * m_yradius;
 	double a = (q_square * (direction.x * direction.x)) + (p_square * (direction.y * direction.y));
 	double b = 2 * ((eye.x * direction.x * q_square) + (eye.y * direction.y * p_square));
-	double c = (q_square * eye.x * eye.x) + (p_square * eye.x * eye.x) - (p_square * q_square);
+	double c = (q_square * eye.x * eye.x) + (p_square * eye.y * eye.y) - (p_square * q_square);
 
 	// solving the quadratic equation
 	double roots[2];
