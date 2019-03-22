@@ -259,8 +259,8 @@ int gr_nh_cylinder_cmd(lua_State* L)
   get_tuple(L, 2, &pos[0], 3);
 
   double xradius = luaL_checknumber(L, 3);
-  double yradius = luaL_checknumber(L, 3);
-  double height = luaL_checknumber(L, 3);
+  double yradius = luaL_checknumber(L, 4);
+  double height = luaL_checknumber(L, 5);
 
   data->node = new GeometryNode(name, new NonhierCylinder(pos, xradius, yradius, height));
 
