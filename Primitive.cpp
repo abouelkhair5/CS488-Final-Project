@@ -273,8 +273,10 @@ bool NonhierCylinder::intersect(const glm::vec3 eye, const glm::vec3 direction, 
 		// the ray is intersecting with the walls of the cylinder the normal is pointing outwards starting from the center
 		glm::vec3 point_of_intersection = eye + float(t) * direction;
 		normal = glm::normalize(point_of_intersection - m_pos);
-
 	}
 
+  glm::vec3 point_of_intersection = eye + float(t) * direction;
+  normal = glm::normalize(point_of_intersection - m_pos);
+  normal[1] = 0;
 	return true;
 }
