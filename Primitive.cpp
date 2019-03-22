@@ -246,7 +246,7 @@ bool NonhierCylinder::intersect(const glm::vec3 eye, const glm::vec3 direction, 
 	double min_root = std::min(roots[0], roots[1]);
 	double max_root = std::max(roots[0], roots[1]);
 
-	if(num_roots <= 0 || max_root < std::min(EPSILON, t_min_y) || min_root > t_max_y)
+	if(num_roots <= 0 || max_root < EPSILON)//std::min(EPSILON, t_min_y) || min_root > t_max_y)
 	{
 		// if there are no roots or both roots are behind the eye
 		// ie t is negative return false
