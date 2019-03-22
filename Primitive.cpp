@@ -63,7 +63,7 @@ bool NonhierSphere::intersect(const glm::vec3 ray_origin, const glm::vec3 ray_di
 	// there's at least one positive root
 	// if the closer intersection is in front of the ray pick that
 	// other wise pick the other one
-	t = (min_root > EPSILON)? min_root : max_root);
+	t = (min_root > EPSILON)? min_root : max_root;
 
 	glm::vec3 point_of_intersection = ray_origin + (float)t * ray_direction;
 	normal = glm::normalize(point_of_intersection - m_pos);
@@ -271,7 +271,7 @@ bool NonhierCylinder::intersect(const glm::vec3 eye, const glm::vec3 direction, 
 	}
 	else{
 		// the ray is intersecting with the walls of the cylinder the normal is pointing outwards starting from the center
-		glm::vec3 point_of_intersection = eye + t * direction;
+		glm::vec3 point_of_intersection = eye + float(t) * direction;
 		glm::vec3 normal_vector = point_of_intersection - m_pos;
 		// the normal shouldn't have a z component
 		normal_vector[2] = 0;
