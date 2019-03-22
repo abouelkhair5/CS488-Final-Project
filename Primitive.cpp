@@ -256,9 +256,9 @@ bool NonhierCylinder::intersect(const glm::vec3 eye, const glm::vec3 direction, 
 	// now we know there exists a positive t that solves the quadratic eqn and satisfies the z range
 	// now we want the minimum positive t that satisfies all these conditions
 
-//	double t_min = std::max(t_min_y, min_root);
-//	double t_max = std::min(t_max_y, max_root);
-//	t = (t_min > EPSILON)? t_min : t_max;
+	double t_min = std::max(t_min_y, min_root);
+	double t_max = std::min(t_max_y, max_root);
+	t = (t_min > EPSILON)? t_min : t_max;
 
   t = (min_root > EPSILON)? min_root : max_root;
 	// finding the normal
