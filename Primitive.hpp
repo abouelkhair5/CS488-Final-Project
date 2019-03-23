@@ -72,3 +72,19 @@ private:
     double m_yradius;
     double m_height;
 };
+
+class NonhierCone : public Primitive {
+public:
+    NonhierCone(const glm::vec3& pos, double xradius, double zradius, double height)
+            : m_pos(pos), m_xradius(xradius), m_zradius(zradius), m_height(height)
+    {
+    }
+    virtual bool intersect(const glm::vec3 eye, const glm::vec3 direction, double &t, glm::vec3 &normal);
+    virtual ~NonhierCone();
+
+private:
+    glm::vec3 m_pos;
+    double m_xradius;
+    double m_zradius;
+    double m_height;
+};

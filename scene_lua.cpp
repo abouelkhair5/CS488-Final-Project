@@ -270,6 +270,32 @@ int gr_nh_cylinder_cmd(lua_State* L)
   return 1;
 }
 
+// Create a non-hierarchical Cone node
+extern "C"
+int gr_nh_cone_cmd(lua_State* L)
+{
+  GRLUA_DEBUG_CALL;
+
+  gr_node_ud* data = (gr_node_ud*)lua_newuserdata(L, sizeof(gr_node_ud));
+  data->node = 0;
+
+  const char* name = luaL_checkstring(L, 1);
+
+  glm::vec3 pos;
+  get_tuple(L, 2, &pos[0], 3);
+
+  double xradius = luaL_checknumber(L, 3);
+  double yradius = luaL_checknumber(L, 4);
+  double height = luaL_checknumber(L, 5);
+
+  data->node = new GeometryNode(name, new NonhierCylinder(pos, xradius, yradius, height));
+
+  luaL_getmetatable(L, "gr.node");
+  lua_setmetatable(L, -2);
+
+  return 1;
+}
+
 // Create a polygonal Mesh node
 extern "C"
 int gr_mesh_cmd(lua_State* L)
@@ -552,6 +578,7 @@ static const luaL_Reg grlib_functions[] = {
   {"nh_sphere", gr_nh_sphere_cmd},
   {"nh_box", gr_nh_box_cmd},
   {"nh_cylinder", gr_nh_cylinder_cmd},
+  {"nh_cone", gr_nh_cone_cmd},
   {"mesh", gr_mesh_cmd},
   {"light", gr_light_cmd},
   {"render", gr_render_cmd},
