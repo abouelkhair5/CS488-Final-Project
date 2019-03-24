@@ -303,75 +303,85 @@ bool Cylinder::intersect(const glm::vec3 eye, const glm::vec3 direction, double 
   return false;
 }
 
-NonhierCone::~NonhierCone() = default;
+Cone::~Cone() = default;
 
-bool NonhierCone::intersect(const glm::vec3 eye, const glm::vec3 direction, double &t, glm::vec3 &normal)
+bool Cone::intersect(const glm::vec3 eye, const glm::vec3 direction, double &t, glm::vec3 &normal)
 {
+	glm::vec3 m_pos = glm::vec3(0.0);
+	double radius = 0.5;
+	double height = 1.0;
+	bool intersection = false;
+	double current_t;
+	glm::vec3 current_normal;
+
+	double top_t = (m_pos.y + height - eye.y) / direction.y;
+	double bottom_t = (m_pos.y - eye.y) / direction.y;
+	glm::vec3 point_of_intersection = eye + float(bottom_t) * direction;
+	double distance_to_center = sqrt(pow(point_of_intersection.x, 2) + pow(point_of_intersection.z, 2));
+	if( bottom_t > EPSILON && distance_to_center < radius )
+	{
+		current_t = bottom_t;
+		current_normal = glm::vec3(0, -1, 0);
+		intersection = true;
+	}
+
 	// using the equation x^2/p^2 + z^2/q^2 = y^2/h^2 and eye + t * direction = point
 	// we get the following a b and c for solving a quadratic equation
-	double tan_theta_sq = (m_xradius / m_height) * (m_xradius / m_height);
-	double tan_phi_sq = (m_zradius / m_height) * (m_zradius / m_height);
+	double tan_theta_sq = (radius / height) * (radius / height);
 
 	double mx = eye.x - m_pos.x;
 	double my = eye.y - m_pos.y;
 	double mz = eye.z - m_pos.z;
 
-	double a = ((direction.x * direction.x) * tan_phi_sq)
-					+ ((direction.y * direction.y) * tan_theta_sq)
-					- ((direction.z * direction.z) * tan_phi_sq * tan_theta_sq);
+	double a = tan_theta_sq * ((direction.x * direction.x) + (direction.z * direction.z) - (direction.y * direction.y * tan_theta_sq));
 
-	double b = 2 * ((mx * direction.x * tan_phi_sq)
+	double b = 2 * tan_theta_sq * ((mx * direction.x)
 					+ (mz * direction.z * tan_theta_sq)
-					- (my * direction.y * tan_theta_sq * tan_phi_sq));
+					- (my * direction.y * tan_theta_sq * tan_theta_sq));
 
-	double c = (mx * mx * tan_phi_sq) + (mz * mz * tan_theta_sq) - (my * my * tan_phi_sq * tan_theta_sq);
+	double c = (mx * mx * tan_theta_sq) + (mz * mz * tan_theta_sq) - (my * my * tan_theta_sq * tan_theta_sq);
 
 	double roots[2];
 
 	size_t num_roots = quadraticRoots(a, b, c, roots);
 
-	double min_root = std::min(roots[0], roots[1]);
-	double max_root = std::max(roots[0], roots[1]);
+	if(num_roots > 0) {
+		double min_root = std::min(roots[0], roots[1]);
+		double max_root = std::max(roots[0], roots[1]);
 
+		// finding a bound on t using y
+		double t_min_y = std::min(top_t, bottom_t);
+		double t_max_y = std::max(top_t, bottom_t);
 
-	if(num_roots <= 0 || max_root < EPSILON)
-	{
-		return false;
+		double cone_intersection;
+		bool eligible_point = false;
+
+		if (min_root > std::max(EPSILON, t_min_y) && min_root < t_max_y) {
+			cone_intersection = min_root;
+			eligible_point = true;
+		} else if (max_root > std::max(EPSILON, t_min_y) && max_root < t_max_y) {
+			cone_intersection = min_root;
+			eligible_point = true;
+		}
+
+		if(eligible_point && (!intersection || cone_intersection < current_t))
+		{
+			current_t = cone_intersection;
+			point_of_intersection = eye + float(t) * direction;
+			glm::vec3 v = point_of_intersection - m_pos;
+			double r = sqrt((v.x * v.x) + (v.z * v.z));
+			current_normal[0] = v.x;
+			current_normal[1] = r * r / v.y;
+			current_normal[2] = v.z;
+			intersection = true;
+		}
 	}
 
-	double min_t_y = (m_pos.y - eye.y) / direction.y;
-	double max_t_y = (m_pos.y + m_height - eye.y) / direction.y;
-
-	if(max_t_y < min_t_y)
-	{
-		std::swap(min_t_y, max_t_y);
+	if(intersection){
+		t = current_t;
+		normal = current_normal;
+		return true;
 	}
 
-	if(max_t_y < EPSILON || max_root < min_t_y || min_root > max_t_y)
-	{
-		return false;
-	}
-
-	double min_t = std::max(min_root, min_t_y);
-	double max_t = std::min(max_root, max_t_y);
-
-	t = (min_t > EPSILON)? min_t : max_t;
-
-	double bottom_t = (m_pos.y + m_height - eye.y) / direction.y;
-
-	if(t == bottom_t)
-	{
-		normal = glm::vec3(0, -1, 0);
-	}
-	else
-	{
-		glm::vec3 point_of_intersection = eye + float(t) * direction;
-		glm::vec3 v = point_of_intersection - m_pos;
-		double r = sqrt((v.x * v.x) + (v.z * v.z));
-		normal[0] = v.x;
-		normal[1] = r * r / v.y;
-		normal[2] = v.z;
-	}
-
-	return true;
+	return false;
 }
