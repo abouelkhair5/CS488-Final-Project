@@ -72,7 +72,8 @@ void ray_color(
 
 	glm::vec3 point_of_intersection = eye + (float(t) * ray_direction);
 	glm::vec3 dummy_normal, dummy_kd, dummy_ks;
-	double dummy_t, dummy_shininess;
+	double dummy_t, dummy_shininess, dummy_ior;
+	bool dummy_transparency;
 	glm::mat4 world_to_model = glm::mat4();
 	bool ray_intersection = false;
 
@@ -88,7 +89,21 @@ void ray_color(
 		l = glm::normalize(l);
 
 		// dummy values to pass to hit, however their values aren't needed
-		if(!hit(scene, point_of_intersection, l, world_to_model, dummy_t, dummy_normal, dummy_kd, dummy_ks, dummy_shininess, ray_intersection))
+		bool light_blocked = hit(
+						scene,
+						point_of_intersection,
+						l,
+						world_to_model,
+						dummy_t,
+						dummy_normal,
+						dummy_kd,
+						dummy_ks,
+						dummy_shininess,
+						dummy_transparency,
+						dummy_ior,
+						ray_intersection);
+
+		if(!light_blocked)
 		{
 			// shoot a ray from POI to light source, if that ray intersects with an object
 			// on the way then that light source is blocked and shadow will be casted
@@ -184,6 +199,8 @@ bool hit(
 	glm::vec3 &kd,
 	glm::vec3 &ks,
 	double &shininess,
+	bool &transparency,
+	double &ior,
 	bool &ray_intersection
 ){
 	glm::mat4 world_to_new_model = scene->get_inverse() * world_to_model;
@@ -209,6 +226,8 @@ bool hit(
 				kd = phong_mat->m_kd;
 				ks = phong_mat->m_ks;
 				shininess = phong_mat->m_shininess;
+				transparency = phong_mat->m_transparent;
+				ior = phong_mat->m_ior;
 			}
 			//set pixel to color of object
 		}
@@ -217,7 +236,7 @@ bool hit(
 		// recurse on other children 
 		for(SceneNode *child: scene->children){
 			hit(child, ray_origin_in_model, ray_direction_in_model, world_to_new_model,
-				ray_closest_t, intersection_normal, kd, ks, shininess, ray_intersection);
+				ray_closest_t, intersection_normal, kd, ks, shininess, transparency, ior, ray_intersection);
 		}
 	}
 	return ray_intersection;
@@ -247,10 +266,12 @@ void set_pixel(
 	glm::vec3 kd;
 	glm::vec3 ks;
 	double shininess;
+	bool transparency;
+	double ior;
 	bool ray_intersection = false;
 	// shot a ray if you get a hit measure the colour of that object using phoneg 
 	// illumentation model other with show the background color
-	if(hit(root, eye, ray_direction, world_to_model, t, normal, kd, ks, shininess, ray_intersection)){
+	if(hit(root, eye, ray_direction, world_to_model, t, normal, kd, ks, shininess, transparency, ior, ray_intersection)){
 		glm::vec3 col;
 		double dummy_ri = 0;
 		ray_color(root, eye, ray_direction, normal, t, ambient, lights, kd, ks, shininess, false, dummy_ri, col, 4);

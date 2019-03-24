@@ -45,6 +45,8 @@ bool hit(
 	glm::vec3 &kd,
 	glm::vec3 &ks,
 	double &shininess,
+	double &shininess,
+	bool &transparency,
 	bool& ray_intersection
 );
 

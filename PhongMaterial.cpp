@@ -8,6 +8,7 @@ PhongMaterial::PhongMaterial(
 	, m_ks(ks)
 	, m_shininess(shininess)
 	, m_transparent(false)
+	, m_ior(0)
 {}
 
 PhongMaterial::PhongMaterial(
