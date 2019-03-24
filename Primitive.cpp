@@ -308,7 +308,7 @@ Cone::~Cone() = default;
 bool Cone::intersect(const glm::vec3 eye, const glm::vec3 direction, double &t, glm::vec3 &normal)
 {
 	glm::vec3 m_pos = glm::vec3(0.0);
-	double radius = 0.5;
+	double radius = 1.0;
 	double height = 1.0;
 	bool intersection = false;
 	double current_t;
