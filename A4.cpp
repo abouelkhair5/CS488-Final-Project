@@ -249,8 +249,9 @@ bool ray_color(
 		col[0] = 0;//(100.0 + ((float) y * 155.0 / (float) h)) / 255.0;
 		// green is going from 170 to 180
 		col[1] = 0;//150.0 / 255.0;
+		//col[1] = (ray_direction.y < 0)? -ray_direction.y : ray_direction.y;
 		//blue is going form 250 to 0
-		col[2] = (ray_direction.y < 0)? -ray_direction.y : ray_direction.y;
+		col[2] = 0.4 + (2 * (ray_direction.y < 0)? -ray_direction.y : ray_direction.y);
 	}
 
 	return ray_intersection;
