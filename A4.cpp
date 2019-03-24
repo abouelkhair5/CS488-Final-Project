@@ -68,13 +68,13 @@ void ray_color(
 	col[2] = kd[2] * ambient[2];
 
 	for(Light* light: lights){
-		glm::vec3 point_of_intersection = eye + (t * ray_direction);
+		glm::vec3 point_of_intersection = eye + (float(t) * ray_direction);
 		glm::vec3 l = light->position - point_of_intersection;
 		double dist_to_light = glm::length(l);
 		double attenuation = light->falloff[0];
 		attenuation += (light->falloff[1] * dist_to_light);
 		attenuation += (light->falloff[2] * dist_to_light * dist_to_light);
-		glm::vec3 I_in = (1 / attenuation) * light->colour;
+		glm::vec3 I_in = float(1 / attenuation) * light->colour;
 		l = glm::normalize(l);
 
 		// dummy values to pass to hit, however their values aren't needed
@@ -83,7 +83,7 @@ void ray_color(
 		glm::mat4 world_to_model = glm::mat4();
 		bool ray_intersection = false;
 		if(!hit(scene, point_of_intersection, l, world_to_model, dummy_t, dummy_normal, dummy_kd, dummy_ks, dummy_shininess, ray_intersection)){
-			// shoot a ray from POI to light soure, if that ray intersects with an object
+			// shoot a ray from POI to light source, if that ray intersects with an object
 			// on the way then that light source is blocked and shadow will be casted
 
 			glm::vec3 v = normalize(eye - point_of_intersection);
