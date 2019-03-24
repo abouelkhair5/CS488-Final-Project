@@ -255,13 +255,6 @@ int gr_cylinder_cmd(lua_State* L)
 
   const char* name = luaL_checkstring(L, 1);
 
-  glm::vec3 pos;
-  get_tuple(L, 2, &pos[0], 3);
-
-  double xradius = luaL_checknumber(L, 3);
-  double yradius = luaL_checknumber(L, 4);
-  double height = luaL_checknumber(L, 5);
-
   data->node = new GeometryNode(name, new Cylinder());
 
   luaL_getmetatable(L, "gr.node");
