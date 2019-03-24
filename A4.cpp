@@ -95,6 +95,7 @@ bool ray_color(
       l = glm::normalize(l);
 
       // dummy values to pass to hit, however their values aren't needed
+      ray_intersection = false;
       bool light_blocked = hit(
               scene,
               point_of_intersection,
