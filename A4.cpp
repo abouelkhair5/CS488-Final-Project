@@ -10,17 +10,17 @@
 #include <chrono>
 #include <ctime>
 
-// #define MULTI_THREAD 
-#define REFLECTION
-// #define REFRACTION
-// #define SHOW_PROGRESS
+//#define MULTI_THREAD
+//#define REFLECTION
+#define REFRACTION
+//#define SHOW_PROGRESS
 
 glm::mat4 generate_dcs_to_world_mat(
-		uint width, uint height,
-		int d, double fov,
-		glm::vec3 eye,
-		glm::vec3 view,
-		glm::vec3 up
+	uint width, uint height,
+	int d, double fov,
+	glm::vec3 eye,
+	glm::vec3 view,
+	glm::vec3 up
 ) {
 	// 1. Translate the origin from top left to origin
 	// ie translate by width/2 and -height/2
@@ -75,7 +75,10 @@ void ray_color(
 	double dummy_t, dummy_shininess;
 	glm::mat4 world_to_model = glm::mat4();
 	bool ray_intersection = false;
-	for(Light* light: lights){
+
+	// loop over light sources to check for shadows
+	for(Light* light: lights)
+	{
 		glm::vec3 l = light->position - point_of_intersection;
 		double dist_to_light = glm::length(l);
 		double attenuation = light->falloff[0];
@@ -102,7 +105,8 @@ void ray_color(
 	}
 
 
-#ifdef REFLECTION
+	#ifdef REFLECTION
+	// if reflection option is enabled and we haven't done all our recursive rays yet then we send another one
 	if(remaining_bounces > 0)
 	{
 		glm::vec3 reflected = glm::normalize(ray_direction - 2*glm::dot(ray_direction, normal)* normal);
@@ -144,13 +148,14 @@ void ray_color(
 			col[2] += std::max(0.0f, std::min(1.0f, ks[2] * reflected_color[2]));
 		}
 	}
-#endif
+	#endif
 
-#ifdef REFRACTION
+	#ifdef REFRACTION
 	if(transparency)
 	{
 		// the end goal we want to find the ray coming out of our object and get the color of that
 		// theta is the angle between the incident ray the normal
+		// * we should send a reflective ray here as well but I am not going to worry about this right now*
 		double cos_theta = glm::dot(ray_direction, normal);
 		// cos phi is the angle between the normal and the refracted ray
 		double cos_phi_sq = 1 - ((1 - pow(cos_theta, 2)) / refractive_idx);
@@ -165,7 +170,7 @@ void ray_color(
 			// get us the colour refracted through our object
 		}
 	}
-#endif
+	#endif
 
 }
 
