@@ -329,8 +329,7 @@ void set_pixel(
 	// illumentation model other with show the background color
 	if(hit(root, eye, ray_direction, world_to_model, t, normal, kd, ks, shininess, transparency, ior, ray_intersection)){
 		glm::vec3 col;
-		double dummy_ri = 0;
-		ray_color(root, eye, ray_direction, normal, t, ambient, lights, kd, ks, shininess, false, dummy_ri, col, 4);
+		ray_color(root, eye, ray_direction, normal, t, ambient, lights, kd, ks, shininess, transparency, ior, col, 4);
 		color = col;
 		// std::cout << glm::to_string(col) << std::endl;
 	}
