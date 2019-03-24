@@ -11,7 +11,7 @@
 #include <ctime>
 
 //#define MULTI_THREAD
-//#define REFLECTION
+#define REFLECTION
 //#define REFRACTION
 //#define SHOW_PROGRESS
 
@@ -248,9 +248,9 @@ bool ray_color(
 		// red is start from 120 and going to 250
 		col[0] = 0;//(100.0 + ((float) y * 155.0 / (float) h)) / 255.0;
 		// green is going from 170 to 180
-		col[1] = 0.3;//150.0 / 255.0;
+		col[1] = 0;//150.0 / 255.0;
 		//blue is going form 250 to 0
-		col[2] = 0.8;
+		col[2] = abs(ray_direction.y);
 	}
 
 	return ray_intersection;
