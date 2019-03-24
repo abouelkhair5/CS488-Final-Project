@@ -333,13 +333,11 @@ bool Cone::intersect(const glm::vec3 eye, const glm::vec3 direction, double &t, 
 	double my = eye.y - m_pos.y;
 	double mz = eye.z - m_pos.z;
 
-	double a = tan_theta_sq * ((direction.x * direction.x) + (direction.z * direction.z) - (direction.y * direction.y * tan_theta_sq));
+	double a = ((direction.x * direction.x) + (direction.z * direction.z) - (direction.y * direction.y * tan_theta_sq));
 
-	double b = 2 * tan_theta_sq * ((mx * direction.x)
-					+ (mz * direction.z * tan_theta_sq)
-					- (my * direction.y * tan_theta_sq * tan_theta_sq));
+	double b = 2 * ((mx * direction.x) + (mz * direction.z) - (my * direction.y * tan_theta_sq));
 
-	double c = (mx * mx * tan_theta_sq) + (mz * mz * tan_theta_sq) - (my * my * tan_theta_sq * tan_theta_sq);
+	double c = (mx * mx) + (mz * mz) - (my * my * tan_theta_sq);
 
 	double roots[2];
 
