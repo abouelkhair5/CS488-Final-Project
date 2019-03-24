@@ -246,7 +246,7 @@ int gr_nh_box_cmd(lua_State* L)
 
 // Create a non-hierarchical Cylinder node
 extern "C"
-int gr_nh_cylinder_cmd(lua_State* L)
+int gr_cylinder_cmd(lua_State* L)
 {
   GRLUA_DEBUG_CALL;
 
@@ -577,7 +577,7 @@ static const luaL_Reg grlib_functions[] = {
   {"cube", gr_cube_cmd},
   {"nh_sphere", gr_nh_sphere_cmd},
   {"nh_box", gr_nh_box_cmd},
-  {"nh_cylinder", gr_nh_cylinder_cmd},
+  {"cylinder", gr_cylinder_cmd},
   {"nh_cone", gr_nh_cone_cmd},
   {"mesh", gr_mesh_cmd},
   {"light", gr_light_cmd},

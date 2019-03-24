@@ -216,78 +216,91 @@ bool NonhierBox::intersect(const glm::vec3 ray_origin, const glm::vec3 ray_direc
 	return true;
 }
 
-NonhierCylinder::~NonhierCylinder()
-{
-}
+Cylinder::~Cylinder() = default;
 
-bool NonhierCylinder::intersect(const glm::vec3 eye, const glm::vec3 direction, double &t, glm::vec3 &normal)
+bool Cylinder::intersect(const glm::vec3 eye, const glm::vec3 direction, double &t, glm::vec3 &normal)
 {
-	// using the equation x^2/p^2 + y^2/q^2 = 1 and eye + t * direction = point
+	double radius = 1.0;
+	double height = 1.0;
+	glm::vec3 m_pos = glm::vec3(0.0);
+	bool intersection = false;
+	double current_t;
+	glm::vec3 current_normal;
+
+  double bottom_t = (m_pos.y - eye.y) / direction.y;
+  glm::vec3 point_of_intersection = eye + float(bottom_t) * direction;
+  double distance_to_center = sqrt(pow(point_of_intersection.x, 2) + pow(point_of_intersection.z, 2));
+  if( bottom_t > EPSILON && distance_to_center < radius )
+  {
+		current_t = bottom_t;
+		current_normal = glm::vec3(0, -1, 0);
+		intersection = true;
+  }
+
+  double top_t = (m_pos.y + height - eye.y) / direction.y;
+  point_of_intersection = eye + float(top_t) * direction;
+  distance_to_center = sqrt(pow(point_of_intersection.x, 2) + pow(point_of_intersection.z, 2));
+  if(
+		top_t > EPSILON
+		&& distance_to_center < radius
+		&& (!intersection || top_t < current_t)
+		)
+	{
+  	current_t = top_t;
+  	current_normal = glm::vec3(0, 1, 0);
+  	intersection = true;
+	}
+
+
+  // using the equation x^2/p^2 + y^2/q^2 = 1 and eye + t * direction = point
 	// we get the following a b and c for solving a quadratic equation
-	double p_square = m_xradius * m_xradius;
-	double q_square = m_yradius * m_yradius;
 	double mx = eye.x - m_pos.x;
 	double mz = eye.z - m_pos.z;
-	double a = (q_square * (direction.x * direction.x)) + (p_square * (direction.z * direction.z));
-	double b = 2 * ((mx * direction.x * q_square) + (mz * direction.z * p_square));
-	double c = (q_square * mx * mx) + (p_square * mz * mz) - (p_square * q_square);
+	double a = (direction.x * direction.x) + (direction.z * direction.z);
+	double b = 2 * ((mx * direction.x) + (mz * direction.z));
+	double c = (mx * mx) + (mz * mz) - radius;
 
   // solving the quadratic equation
   double roots[2];
   size_t num_roots = quadraticRoots(a, b, c, roots);
 
-  double min_root = std::min(roots[0], roots[1]);
-  double max_root = std::max(roots[0], roots[1]);
 
-  if(num_roots <= 0 || max_root < EPSILON)
-	{
-    // if there are no roots or both roots are behind the eye
-    // ie t is negative return false
-    return false;
-  }
+	if(num_roots > 0) {
+		double min_root = std::min(roots[0], roots[1]);
+		double max_root = std::max(roots[0], roots[1]);
 
-  // finding a bound on t using y
-  double t_min_y = (m_pos.y - eye.y) / direction.y;
-  double t_max_y = (m_pos.y + m_height - eye.y) / direction.y;
-  if(t_max_y < t_min_y)
-  {
-    std::swap(t_min_y, t_max_y);
-  }
+		// finding a bound on t using y
+		double t_min_y = std::min(top_t, bottom_t);
+		double t_max_y = std::max(top_t, bottom_t);
 
-  if(t_max_y < EPSILON){
-    return false;
-  }
+		double cylinder_intersection;
+		bool eligible_point = false;
 
-  if(t_max_y < min_root || t_min_y > max_root){
-    return false;
-  }
-  // now we know there exists a positive t that solves the quadratic eqn and satisfies the z range
-	// now we want the minimum positive t that satisfies all these conditions
+		if (min_root > std::max(EPSILON, t_min_y) && min_root < t_max_y) {
+			cylinder_intersection = min_root;
+			eligible_point = true;
+		} else if (max_root > std::max(EPSILON, t_min_y) && max_root < t_max_y) {
+			cylinder_intersection = min_root;
+			eligible_point = true;
+		}
 
-	double t_min = std::max(t_min_y, min_root);
-	double t_max = std::min(t_max_y, max_root);
-	t = (t_min > EPSILON)? t_min : t_max;
-
-  t = (min_root > EPSILON)? min_root : max_root;
-	// finding the normal
-	if(t == t_min_y)
-	{
-		// if the point of intersection is on the bottom of the cylinder then the normal is pointing downwards
-		normal = glm::vec3(0, 1, 0);
-	}
-	else if(t == t_max_y)
-	{
-		// if it is on the top then the normal is pointing upwards
-		normal = glm::vec3(0, -1, 0);
-	}
-	else{
-		// the ray is intersecting with the walls of the cylinder the normal is pointing outwards starting from the center
-		glm::vec3 point_of_intersection = eye + float(t) * direction;
-		normal = glm::normalize(point_of_intersection - m_pos);
-		normal[1] = 0;
+		if(eligible_point && (!intersection || cylinder_intersection < current_t))
+		{
+			current_t = cylinder_intersection;
+			point_of_intersection = eye + floor(t) * direction;
+			current_normal = glm::normalize(point_of_intersection - m_pos);
+			current_normal[1] = 0;
+			intersection = true;
+		}
 	}
 
-  return true;
+	if(intersection){
+		t = current_t;
+		normal = current_normal;
+		return true;
+	}
+
+  return false;
 }
 
 NonhierCone::~NonhierCone() = default;
