@@ -262,7 +262,7 @@ int gr_cylinder_cmd(lua_State* L)
   double yradius = luaL_checknumber(L, 4);
   double height = luaL_checknumber(L, 5);
 
-  data->node = new GeometryNode(name, new NonhierCylinder(pos, xradius, yradius, height));
+  data->node = new GeometryNode(name, new Cylinder());
 
   luaL_getmetatable(L, "gr.node");
   lua_setmetatable(L, -2);
@@ -288,7 +288,7 @@ int gr_nh_cone_cmd(lua_State* L)
   double yradius = luaL_checknumber(L, 4);
   double height = luaL_checknumber(L, 5);
 
-  data->node = new GeometryNode(name, new NonhierCylinder(pos, xradius, yradius, height));
+  data->node = new GeometryNode(name, new NonhierCone(pos, xradius, yradius, height));
 
   luaL_getmetatable(L, "gr.node");
   lua_setmetatable(L, -2);

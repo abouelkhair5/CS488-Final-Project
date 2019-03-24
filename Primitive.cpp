@@ -287,7 +287,7 @@ bool Cylinder::intersect(const glm::vec3 eye, const glm::vec3 direction, double 
 		if(eligible_point && (!intersection || cylinder_intersection < current_t))
 		{
 			current_t = cylinder_intersection;
-			point_of_intersection = eye + floor(t) * direction;
+			point_of_intersection = eye + float(t) * direction;
 			current_normal = glm::normalize(point_of_intersection - m_pos);
 			current_normal[1] = 0;
 			intersection = true;
