@@ -5,7 +5,7 @@
 #include <glm/glm.hpp>
 #include <algorithm>
 
-#define EPSILON 0.05
+#define EPSILON 0.03
 // #define RVOLUME_BOUNDS
 #define VOLUME_BOUNDS
 
