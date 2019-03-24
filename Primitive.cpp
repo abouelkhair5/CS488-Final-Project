@@ -321,7 +321,7 @@ bool Cone::intersect(const glm::vec3 eye, const glm::vec3 direction, double &t, 
 	if( top_t > EPSILON && distance_to_center < radius )
 	{
 		current_t = top_t;
-		current_normal = glm::vec3(0, -1, 0);
+		current_normal = glm::vec3(0, 1, 0);
 		intersection = true;
 	}
 
