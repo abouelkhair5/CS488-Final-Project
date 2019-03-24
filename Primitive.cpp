@@ -280,7 +280,7 @@ bool Cylinder::intersect(const glm::vec3 eye, const glm::vec3 direction, double 
 			cylinder_intersection = min_root;
 			eligible_point = true;
 		} else if (max_root > std::max(EPSILON, t_min_y) && max_root < t_max_y) {
-			cylinder_intersection = min_root;
+			cylinder_intersection = max_root;
 			eligible_point = true;
 		}
 
@@ -360,7 +360,7 @@ bool Cone::intersect(const glm::vec3 eye, const glm::vec3 direction, double &t, 
 			cone_intersection = min_root;
 			eligible_point = true;
 		} else if (max_root > std::max(EPSILON, t_min_y) && max_root < t_max_y) {
-			cone_intersection = min_root;
+			cone_intersection = max_root;
 			eligible_point = true;
 		}
 
