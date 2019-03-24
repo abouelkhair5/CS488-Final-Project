@@ -59,6 +59,8 @@ void ray_color(
 	const glm::vec3 &kd,
 	const glm::vec3 &ks,
 	const double &shininess,
+	const bool transparency,
+	const double &refractive_idx,
 	glm::vec3 &col,
 	uint remaining_bounces
 );

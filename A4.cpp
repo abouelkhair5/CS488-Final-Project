@@ -11,7 +11,8 @@
 #include <ctime>
 
 // #define MULTI_THREAD 
-// #define REFLECTION
+#define REFLECTION
+// #define REFRACTION
 // #define SHOW_PROGRESS
 
 glm::mat4 generate_dcs_to_world_mat(
@@ -60,6 +61,8 @@ void ray_color(
 	const glm::vec3 &kd,
 	const glm::vec3 &ks,
 	const double &shininess,
+	const bool transparency,
+	const double &refractive_idx,
 	glm::vec3 &col,
 	uint remaining_bounces
 ){
@@ -67,8 +70,12 @@ void ray_color(
 	col[1] = kd[1] * ambient[1];
 	col[2] = kd[2] * ambient[2];
 
+	glm::vec3 point_of_intersection = eye + (float(t) * ray_direction);
+	glm::vec3 dummy_normal, dummy_kd, dummy_ks;
+	double dummy_t, dummy_shininess;
+	glm::mat4 world_to_model = glm::mat4();
+	bool ray_intersection = false;
 	for(Light* light: lights){
-		glm::vec3 point_of_intersection = eye + (float(t) * ray_direction);
 		glm::vec3 l = light->position - point_of_intersection;
 		double dist_to_light = glm::length(l);
 		double attenuation = light->falloff[0];
@@ -78,11 +85,8 @@ void ray_color(
 		l = glm::normalize(l);
 
 		// dummy values to pass to hit, however their values aren't needed
-		glm::vec3 dummy_normal, dummy_kd, dummy_ks;
-		double dummy_t, dummy_shininess;
-		glm::mat4 world_to_model = glm::mat4();
-		bool ray_intersection = false;
-		if(!hit(scene, point_of_intersection, l, world_to_model, dummy_t, dummy_normal, dummy_kd, dummy_ks, dummy_shininess, ray_intersection)){
+		if(!hit(scene, point_of_intersection, l, world_to_model, dummy_t, dummy_normal, dummy_kd, dummy_ks, dummy_shininess, ray_intersection))
+		{
 			// shoot a ray from POI to light source, if that ray intersects with an object
 			// on the way then that light source is blocked and shadow will be casted
 
@@ -95,51 +99,74 @@ void ray_color(
 			col[1] += std::max(0.0, std::min(1.0, (kd[1] * l_dot_n * I_in[1]) + (ks[1] * r_dot_v_to_p * I_in[1])));
 			col[2] += std::max(0.0, std::min(1.0, (kd[2] * l_dot_n * I_in[2]) + (ks[2] * r_dot_v_to_p * I_in[2])));
 		}
+	}
+
+
 #ifdef REFLECTION
-		if(remaining_bounces > 0){
-			glm::vec3 reflected = glm::normalize(ray_direction - 2*glm::dot(ray_direction, normal)* normal);
-			glm::mat4 ref_model;
-			glm::vec3 ref_norm;
-			double ref_t = 0;
-			glm::vec3 ref_kd;
-			glm::vec3 ref_ks;
-			double ref_shininess;
-			bool reflect_ray_intersection = false;
-			glm::vec3 reflected_color = glm::vec3(0.0);
+	if(remaining_bounces > 0)
+	{
+		glm::vec3 reflected = glm::normalize(ray_direction - 2*glm::dot(ray_direction, normal)* normal);
+		glm::mat4 ref_model;
+		glm::vec3 ref_norm;
+		double ref_t = 0;
+		glm::vec3 ref_kd;
+		glm::vec3 ref_ks;
+		double ref_shininess;
+		double ref_refractive_idx;
+		bool reflect_ray_intersection = false;
+		glm::vec3 reflected_color = glm::vec3(0.0);
 
-			reflect_ray_intersection = hit
-			(
-				scene,
-				point_of_intersection, reflected,
-				ref_model,
-				ref_t, ref_norm,
-				ref_kd, ref_ks, ref_shininess,
-				reflect_ray_intersection
-			);
+		reflect_ray_intersection = hit
+						(
+										scene,
+										point_of_intersection, reflected,
+										ref_model,
+										ref_t, ref_norm,
+										ref_kd, ref_ks, ref_shininess,
+										reflect_ray_intersection
+						);
 
-			if(reflect_ray_intersection){
-				ray_color
-				(
-					scene,
-					point_of_intersection, reflected,
-					ref_norm, ref_t,
-					ambient, lights,
-					ref_kd, ref_ks, ref_shininess,
-					reflected_color,
-					remaining_bounces - 1
-				);
-				reflected_color = 0.3 * reflected_color;
-				col[0] += std::max(0.0f, std::min(1.0f, ks[0] * reflected_color[0]));
-				col[1] += std::max(0.0f, std::min(1.0f, ks[1] * reflected_color[1]));
-				col[2] += std::max(0.0f, std::min(1.0f, ks[2] * reflected_color[2]));
-			}
+		if(reflect_ray_intersection){
+			ray_color
+							(
+											scene,
+											point_of_intersection, reflected,
+											ref_norm, ref_t,
+											ambient, lights,
+											ref_kd, ref_ks, ref_shininess,
+											false, ref_refractive_idx,
+											reflected_color,
+											remaining_bounces - 1
+							);
+			reflected_color = 0.3f * reflected_color;
+			col[0] += std::max(0.0f, std::min(1.0f, ks[0] * reflected_color[0]));
+			col[1] += std::max(0.0f, std::min(1.0f, ks[1] * reflected_color[1]));
+			col[2] += std::max(0.0f, std::min(1.0f, ks[2] * reflected_color[2]));
 		}
+	}
 #endif
 
-		// col[0] = std::min(1.0f, col[0]);
-		// col[1] = std::min(1.0f, col[1]);
-		// col[2] = std::min(1.0f, col[2]);
+#ifdef REFRACTION
+	if(transparency)
+	{
+		// the end goal we want to find the ray coming out of our object and get the color of that
+		// theta is the angle between the incident ray the normal
+		double cos_theta = glm::dot(ray_direction, normal);
+		// cos phi is the angle between the normal and the refracted ray
+		double cos_phi_sq = 1 - ((1 - pow(cos_theta, 2)) / refractive_idx);
+
+		if(cos_phi_sq >= 0){
+			// not a complete internal refraction
+			// refracted = sin_phi * b - normal * cos_phi where b along with normal form an
+			// orthonormal basis to the plane containing the the incident ray and the normal
+			glm::vec3 refracted = ((ray_direction - (normal * float(cos_theta))) / float(refractive_idx)) - (normal * float(sqrt(cos_phi_sq)));
+
+			// we need to find where this refracted ray exits the object from which point we will send another ray to
+			// get us the colour refracted through our object
+		}
 	}
+#endif
+
 }
 
 bool hit(
@@ -220,7 +247,8 @@ void set_pixel(
 	// illumentation model other with show the background color
 	if(hit(root, eye, ray_direction, world_to_model, t, normal, kd, ks, shininess, ray_intersection)){
 		glm::vec3 col;
-		ray_color(root, eye, ray_direction, normal, t, ambient, lights, kd, ks, shininess, col, 4);
+		double dummy_ri = 0;
+		ray_color(root, eye, ray_direction, normal, t, ambient, lights, kd, ks, shininess, false, dummy_ri, col, 4);
 		color = col;
 		// std::cout << glm::to_string(col) << std::endl;
 	}
