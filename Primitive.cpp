@@ -229,7 +229,7 @@ bool Cylinder::intersect(const glm::vec3 eye, const glm::vec3 direction, double 
 
   double bottom_t = (m_pos.y - eye.y) / direction.y;
   glm::vec3 point_of_intersection = eye + float(bottom_t) * direction;
-  double distance_to_center = sqrt(pow(point_of_intersection.x, 2) + pow(point_of_intersection.z, 2));
+  double distance_to_center = sqrt((point_of_intersection.x * point_of_intersection.x) + (point_of_intersection.z * point_of_intersection.z));
   if( bottom_t > EPSILON && distance_to_center < radius )
   {
 		current_t = bottom_t;
@@ -239,7 +239,7 @@ bool Cylinder::intersect(const glm::vec3 eye, const glm::vec3 direction, double 
 
   double top_t = (m_pos.y + height - eye.y) / direction.y;
   point_of_intersection = eye + float(top_t) * direction;
-  distance_to_center = sqrt(pow(point_of_intersection.x, 2) + pow(point_of_intersection.z, 2));
+  distance_to_center = sqrt((point_of_intersection.x * point_of_intersection.x) + (point_of_intersection.z * point_of_intersection.z));
   if(
 		top_t > EPSILON
 		&& distance_to_center < radius
@@ -317,7 +317,7 @@ bool Cone::intersect(const glm::vec3 eye, const glm::vec3 direction, double &t, 
 	double top_t = (m_pos.y + height - eye.y) / direction.y;
 	double bottom_t = (m_pos.y - eye.y) / direction.y;
 	glm::vec3 point_of_intersection = eye + float(top_t) * direction;
-	double distance_to_center = sqrt(pow(point_of_intersection.x, 2) + pow(point_of_intersection.z, 2));
+	double distance_to_center = sqrt((point_of_intersection.x * point_of_intersection.x) + (point_of_intersection.z * point_of_intersection.z));
 	if( top_t > EPSILON && distance_to_center < radius )
 	{
 		current_t = top_t;
