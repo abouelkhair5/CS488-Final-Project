@@ -37,9 +37,9 @@ glm::mat4 generate_dcs_to_world_mat(
 
 bool hit(
 	SceneNode* scene,
-	const glm::vec3 ray_origin,
-	const glm::vec3 ray_direction,
-	const glm::mat4 world_to_model,
+	const glm::vec3 &ray_origin,
+	const glm::vec3 &ray_direction,
+	const glm::mat4 &world_to_model,
 	double &ray_closest_t,
 	glm::vec3 &intersection_normal,
 	glm::vec3 &kd,
@@ -54,15 +54,8 @@ void ray_color(
 	SceneNode* scene,
 	const glm::vec3 &eye,
 	const glm::vec3 &ray_direction,
-	const glm::vec3 &normal,
-	const double &t,
 	const glm::vec3 &ambient,
 	const std::list<Light *> &lights,
-	const glm::vec3 &kd,
-	const glm::vec3 &ks,
-	const double &shininess,
-	const bool transparency,
-	const double &refractive_idx,
 	glm::vec3 &col,
 	uint remaining_bounces
 );
