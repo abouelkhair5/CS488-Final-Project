@@ -7,7 +7,7 @@
 
 #define EPSILON 0.05
 // #define RVOLUME_BOUNDS
-// #define VOLUME_BOUNDS
+#define VOLUME_BOUNDS
 
 class Primitive {
 public:
