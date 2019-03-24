@@ -50,7 +50,7 @@ glm::mat4 generate_dcs_to_world_mat(
 
 
 
-void ray_color(
+bool ray_color(
 	SceneNode* scene,
 	const glm::vec3 &eye,
 	const glm::vec3 &ray_direction,
@@ -71,13 +71,8 @@ void ray_color(
   double ior;
 
 	glm::mat4 world_to_model = glm::mat4();
-	bool ray_intersection = hit(
-	        scene,
-	        eye, ray_direction, world_to_model,
-	        t, normal,
-	        kd, ks, shininess,
-	        transparency, ior,
-	        ray_intersection);
+	bool ray_intersection = false;
+	hit(scene, eye, ray_direction, world_to_model, t, normal, kd, ks, shininess, transparency, ior, ray_intersection);
 
 	if(ray_intersection) {
     col[0] = kd[0] * ambient[0];
@@ -252,10 +247,12 @@ void ray_color(
 		// red is start from 120 and going to 250
 		col[0] = 0;//(100.0 + ((float) y * 155.0 / (float) h)) / 255.0;
 		// green is going from 170 to 180
-		col[1] = 0;//150.0 / 255.0;
+		col[1] = 0.3;//150.0 / 255.0;
 		//blue is going form 250 to 0
-		col[2] = ray_direction.y;
+		col[2] = 0.8;
 	}
+
+	return ray_intersection;
 }
 
 bool hit(

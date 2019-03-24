@@ -50,7 +50,7 @@ bool hit(
 	bool& ray_intersection
 );
 
-void ray_color(
+bool ray_color(
 	SceneNode* scene,
 	const glm::vec3 &eye,
 	const glm::vec3 &ray_direction,
