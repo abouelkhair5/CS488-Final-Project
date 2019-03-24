@@ -250,7 +250,7 @@ bool ray_color(
 		// green is going from 170 to 180
 		col[1] = 0;//150.0 / 255.0;
 		//blue is going form 250 to 0
-		col[2] = abs(ray_direction.y);
+		col[2] = (ray_direction.y < 0)? -ray_direction.y : ray_direction.y;
 	}
 
 	return ray_intersection;
