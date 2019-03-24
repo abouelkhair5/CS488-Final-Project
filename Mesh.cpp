@@ -78,7 +78,7 @@ bool Mesh::intersect(
 	#ifdef RVOLUME_BOUNDS
 	NonhierBox b = NonhierBox(min_point, max_size);
 	return b.intersect(eye, direction, t, normal);
-	#elifdef VOLUME_BOUNDS
+	#elif defined VOLUME_BOUNDS
 	NonhierBox b = NonhierBox(min_point, max_size);
 	if(!b.intersect(eye, direction, t, normal)){
 		return false;
