@@ -137,14 +137,6 @@ bool ray_color(
     if(remaining_bounces > 0)
     {
       glm::vec3 reflected = glm::normalize(ray_direction - 2*glm::dot(ray_direction, normal)* normal);
-      glm::mat4 ref_model;
-      glm::vec3 ref_norm;
-      double ref_t = 0;
-      glm::vec3 ref_kd;
-      glm::vec3 ref_ks;
-      double ref_shininess;
-      bool transparency;
-      double ref_ior;
       bool reflect_ray_intersection = false;
       glm::vec3 reflected_color = glm::vec3(0.0);
 
@@ -251,6 +243,10 @@ bool ray_color(
   }
 
   return ray_intersection;
+}
+
+void reflect(glm::vec3 &ray_direction, glm::vec3 &normal, glm::vec3 &reflected){
+  reflected = glm::normalize(ray_direction - 2*glm::dot(ray_direction, normal)* normal);
 }
 
 bool hit(

@@ -60,6 +60,12 @@ bool ray_color(
 	uint remaining_bounces
 );
 
+void reflect(
+  glm::vec3 &ray_direction,
+  glm::vec3 &normal,
+  glm::vec3 &reflected
+);
+
 void set_pixel(
 	SceneNode* root,
 	uint x, uint y,
