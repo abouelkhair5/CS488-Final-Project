@@ -6,3 +6,5 @@ CMakeLists.txt
 cmake-build-debug/
 build/Debug/*
 Proposal/._proposal.tex
+._*
+*/.*
