@@ -221,9 +221,9 @@ bool ray_color(
             );
 
 
-            col[0] = std::max(0.0f, std::min(1.0f, ks[0] * trans_color[0]));
-            col[1] = std::max(0.0f, std::min(1.0f, ks[1] * trans_color[1]));
-            col[2] = std::max(0.0f, std::min(1.0f, ks[2] * trans_color[2]));
+            col[0] += std::max(0.0f, std::min(1.0f, ks[0] * trans_color[0]));
+            col[1] += std::max(0.0f, std::min(1.0f, ks[1] * trans_color[1]));
+            col[2] += std::max(0.0f, std::min(1.0f, ks[2] * trans_color[2]));
 
           }
         }
