@@ -10,10 +10,10 @@
 #include <chrono>
 #include <ctime>
 
-//#define MULTI_THREAD
+#define MULTI_THREAD
 #define REFLECTION
 #define REFRACTION
-//#define SHOW_PROGRESS
+#define SHOW_PROGRESS
 
 glm::mat4 generate_dcs_to_world_mat(
 	uint width, uint height,
@@ -386,7 +386,7 @@ void A4_Render(
 	glm::mat4 dcs_to_world = generate_dcs_to_world_mat(w, h, d, fovy, eye, view, up);
 
 	int y_threads = 64;
-	int x_threads = 64;
+	int x_threads = 1;
 	std::thread my_threads[y_threads][x_threads];
 	glm::vec3 *image_array = new glm::vec3[h*w];
 	#ifdef SHOW_PROGRESS
@@ -427,7 +427,7 @@ void A4_Render(
 			#endif
 		}
 		#ifdef SHOW_PROGRESS
-		std::cout << i * x_threads << " threads spun" << std::endl;
+		std::cout << "\r" << i * x_threads << " threads spun" << std::endl;
 		#endif
 	}
 #ifdef SHOW_PROGRESS
@@ -442,7 +442,7 @@ void A4_Render(
 			}
 		}
 		#ifdef SHOW_PROGRESS
-			std::cout << i * x_threads << " Threads done" << std::endl;
+			std::cout << "\r" << i * x_threads << " Threads done" << std::endl;
 		#endif
 	}
 	std::cout << "Scene was rendered using multi-threading" << std::endl;
