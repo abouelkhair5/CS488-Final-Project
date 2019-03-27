@@ -33,12 +33,6 @@ void perturb(
 		glm::vec3 & p
 );
 
-void reflect(
-		glm::vec3 &i,
-		glm::vec3 &n,
-		glm::vec3 &r
-);
-
 glm::mat4 generate_dcs_to_world_mat(
 		uint width, uint height,
 		int d, double fov,

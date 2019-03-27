@@ -63,10 +63,6 @@ void perturb(glm::vec3 &v, glm::vec3 &n, glm::vec3 & p){
   p = glm::vec3(temp_p);
 }
 
-void reflect(glm::vec3 &i, glm::vec3 &n, glm::vec3 &r){
-  r = glm::normalize(i - 2*glm::dot(i, n)* n);
-}
-
 bool ray_color(
 	SceneNode* scene,
 	const glm::vec3 &eye,
@@ -148,8 +144,7 @@ bool ray_color(
 		glm::vec3 reflected_color = glm::vec3(0.0);
     if(remaining_bounces > 0)
     {
-      glm::vec3 reflected;
-      reflect(ray_direction, normal, reflected);
+      glm::vec3 reflected = reflect(ray_direction, normal);
       bool reflect_ray_intersection = false;
 
       reflect_ray_intersection = ray_color
