@@ -59,8 +59,8 @@ void perturb(glm::vec3 &v, glm::vec3 &n, glm::vec3 & p){
   double alpha = glm::acos(sqrt(1 - x1));
   double beta = 2 * M_PI * x2;
 
-  p = glm::rotate(float(alpha), n) * v;
-  p = glm::rotate(float(beta), v) * p;
+  glm::vec4 temp_p = glm::rotate(float(beta), v) * glm::rotate(float(alpha), n) * glm::vec4(v, 0);
+  p = glm::vec3(temp_p);
 }
 
 bool ray_color(
