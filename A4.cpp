@@ -162,6 +162,11 @@ bool ray_color(
           // orthonormal basis to the plane containing the the incident ray and the normal
           glm::vec3 transmitted = ((ray_direction - (normal * float(cos_theta))) / float(ior)) -
                                   (normal * float(sqrt(cos_phi_sq)));
+
+          // the ratio to blend reflection and refraction
+          double r0 = ((ior - 1) / (ior + 1)) * ((ior - 1) / (ior + 1));
+          double r_theta = r0 + (1- r0) * pow((1 - cos_theta), 5);
+
           glm::mat4 trans_model;
           glm::vec3 trans_norm;
           double trans_t = 0;
