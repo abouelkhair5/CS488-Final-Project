@@ -142,13 +142,6 @@ bool ray_color(
 											reflected_color,
 											remaining_bounces - 1
 							);
-
-      if(reflect_ray_intersection){
-        reflected_color = 0.3f * reflected_color;
-        col[0] += std::max(0.0f, std::min(1.0f, ks[0] * reflected_color[0]));
-        col[1] += std::max(0.0f, std::min(1.0f, ks[1] * reflected_color[1]));
-        col[2] += std::max(0.0f, std::min(1.0f, ks[2] * reflected_color[2]));
-      }
     }
 
     #ifdef REFRACTION
@@ -220,6 +213,12 @@ bool ray_color(
         }
       }
     }
+    else {
+			reflected_color = 0.3f * reflected_color;
+			col[0] += std::max(0.0f, std::min(1.0f, ks[0] * reflected_color[0]));
+			col[1] += std::max(0.0f, std::min(1.0f, ks[1] * reflected_color[1]));
+			col[2] += std::max(0.0f, std::min(1.0f, ks[2] * reflected_color[2]));
+		}
     #endif
 		#endif
   }
