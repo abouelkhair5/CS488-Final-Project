@@ -128,11 +128,11 @@ bool ray_color(
 
     #ifdef REFLECTION
     // if reflection option is enabled and we haven't done all our recursive rays yet then we send another one
+		glm::vec3 reflected_color = glm::vec3(0.0);
     if(remaining_bounces > 0)
     {
       glm::vec3 reflected = glm::normalize(ray_direction - 2*glm::dot(ray_direction, normal)* normal);
       bool reflect_ray_intersection = false;
-      glm::vec3 reflected_color = glm::vec3(0.0);
 
       reflect_ray_intersection = ray_color
 							(
@@ -150,7 +150,6 @@ bool ray_color(
         col[2] += std::max(0.0f, std::min(1.0f, ks[2] * reflected_color[2]));
       }
     }
-    #endif
 
     #ifdef REFRACTION
     if (transparency) {
@@ -222,6 +221,7 @@ bool ray_color(
       }
     }
     #endif
+		#endif
   }
 	else {
 		//background colour
