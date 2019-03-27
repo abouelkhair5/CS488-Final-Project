@@ -427,11 +427,11 @@ void A4_Render(
 			#endif
 		}
 		#ifdef SHOW_PROGRESS
-		std::cout << "\r" << i * x_threads << " threads spun" << std::endl;
+		std::cout << "\r" << i * x_threads << " threads spun";
 		#endif
 	}
 #ifdef SHOW_PROGRESS
-	std::cout << "All threads spinning" << std::endl;
+	std::cout << std::endl << "All threads spinning" << std::endl;
 #endif
 
 #ifdef MULTI_THREAD
@@ -442,10 +442,10 @@ void A4_Render(
 			}
 		}
 		#ifdef SHOW_PROGRESS
-			std::cout << "\r" << i * x_threads << " Threads done" << std::endl;
+			std::cout << "\r" << i * x_threads << " Threads done";
 		#endif
 	}
-	std::cout << "Scene was rendered using multi-threading" << std::endl;
+	std::cout << std::endl << "Scene was rendered using multi-threading" << std::endl;
 #endif
 #ifdef REFLECTION
 	std::cout << "Reflection: ENABLED" << std::endl;
