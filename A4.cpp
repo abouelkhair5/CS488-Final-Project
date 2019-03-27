@@ -142,26 +142,16 @@ bool ray_color(
       bool reflect_ray_intersection = false;
       glm::vec3 reflected_color = glm::vec3(0.0);
 
-      reflect_ray_intersection = hit
-              (
-                      scene,
-                      point_of_intersection, reflected,
-                      ref_model,
-                      ref_t, ref_norm,
-                      ref_kd, ref_ks, ref_shininess,
-                      transparency, ref_ior,
-                      reflect_ray_intersection
-              );
+      reflect_ray_intersection = ray_color
+							(
+											scene,
+											point_of_intersection, reflected,
+											ambient, lights,
+											reflected_color,
+											remaining_bounces - 1
+							);
 
       if(reflect_ray_intersection){
-        ray_color
-                (
-                        scene,
-                        point_of_intersection, reflected,
-                        ambient, lights,
-                        reflected_color,
-                        remaining_bounces - 1
-                );
         reflected_color = 0.3f * reflected_color;
         col[0] += std::max(0.0f, std::min(1.0f, ks[0] * reflected_color[0]));
         col[1] += std::max(0.0f, std::min(1.0f, ks[1] * reflected_color[1]));
