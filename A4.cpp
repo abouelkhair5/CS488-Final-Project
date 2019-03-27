@@ -9,6 +9,7 @@
 #include <list>
 #include <chrono>
 #include <ctime>
+#include <random>
 
 #define MULTI_THREAD
 #define REFLECTION
@@ -48,7 +49,19 @@ glm::mat4 generate_dcs_to_world_mat(
 	return world;
 }
 
+void perturb(glm::vec3 &v, glm::vec3 &n, glm::vec3 & p){
+  std::default_random_engine generator;
+  std::uniform_real_distribution<double> distribution(0.0, 1.0);
 
+  double x1 = distribution(generator);
+  double x2 = distribution(generator);
+
+  double alpha = glm::acos(sqrt(1 - x1));
+  double beta = 2 * M_PI * x2;
+
+  p = glm::rotate(float(alpha), n) * v;
+  p = glm::rotate(float(beta), v) * p;
+}
 
 bool ray_color(
 	SceneNode* scene,
