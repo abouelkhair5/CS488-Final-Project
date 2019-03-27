@@ -6,3 +6,7 @@ CMakeLists.txt
 cmake-build-debug/
 build/Debug/*
 Proposal/._proposal.tex
+._*
+A4
+Assets/*.png
+run
