@@ -144,6 +144,9 @@ bool ray_color(
 		glm::vec3 reflected_color = glm::vec3(0.0);
     if(remaining_bounces > 0)
     {
+    	glm::vec3 normal2 = cross(ray_direction, normal);
+    	glm::vec3 perturbed_normal;
+    	perturb(normal, normal2, perturbed_normal);
       glm::vec3 reflected = reflect(ray_direction, normal);
       bool reflect_ray_intersection = false;
 
