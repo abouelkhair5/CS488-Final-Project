@@ -12,7 +12,7 @@
 
 //#define MULTI_THREAD
 #define REFLECTION
-//#define REFRACTION
+#define REFRACTION
 //#define SHOW_PROGRESS
 
 glm::mat4 generate_dcs_to_world_mat(
