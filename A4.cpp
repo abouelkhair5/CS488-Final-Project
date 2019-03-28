@@ -146,28 +146,36 @@ bool ray_color(
     #ifdef REFLECTION
     // if reflection option is enabled and we haven't done all our recursive rays yet then we send another one
 		glm::vec3 reflected_color = glm::vec3(0.0);
+		glm::vec3 reflected = reflect(ray_direction, normal);
+    bool glossy = false;
     if(remaining_bounces > 0) {
-			int glossy_rays = 4;
-			glm::vec3 perturbed_reflected;
-			glm::vec3 reflected = reflect(ray_direction, normal);
-			glm::vec3 color_part;
-			bool reflect_ray_intersection;
+    	if(glossy) {
+				int glossy_rays = 4;
+				int intersected_rays = 0;
+				glm::vec3 perturbed_reflected;
+				glm::vec3 color_part;
+				bool reflect_ray_intersection;
 
-			for (int i = 0; i < glossy_rays; i++) {
-				perturb(reflected, perturbed_reflected);
-				color_part = glm::vec3(0.0f);
+				for (int i = 0; i < glossy_rays; i++) {
+					perturb(reflected, perturbed_reflected);
+					color_part = glm::vec3(0.0f);
 
-				ray_color
-								(
-												scene,
-												point_of_intersection, perturbed_reflected,
-												ambient, lights,
-												color_part,
-												remaining_bounces - 1
-								);
+					reflect_ray_intersection = ray_color(scene, point_of_intersection, perturbed_reflected, ambient, lights,
+																							 color_part, remaining_bounces - 1);
 
-				reflected_color += float(1.0 / glossy_rays) * color_part;
-			}
+					if (reflect_ray_intersection) {
+						reflected_color += color_part;
+						intersected_rays++;
+					}
+				}
+
+				if (intersected_rays > 0) {
+					reflected_color = float(1.0 / intersected_rays) * reflected_color;
+				}
+			} else {
+				ray_color(scene, point_of_intersection, reflected, ambient, lights,
+									reflected_color, remaining_bounces - 1);
+    	}
 
 #ifdef REFRACTION
 			if (transparency) {
