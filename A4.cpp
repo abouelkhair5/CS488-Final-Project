@@ -53,13 +53,13 @@ glm::mat4 generate_dcs_to_world_mat(
 }
 
 void perturb(glm::vec3 &v, glm::vec3 &p){
-	double theta = glm::asin(glm::dot(glm::vec3(0, 1, 0), v));
-	glm::mat4 R1 = glm::rotate(theta, glm::vec3(0, 0, 1));
-	glm::mat4 R6 = glm::rotate(-theta, glm::vec3(0, 0, 1));
+	double theta = glm::asin(glm::dot(glm::vec3(0.0, 1.0, 0.0), v));
+	glm::mat4 R1 = glm::rotate(float(theta), glm::vec3(0.0, 0.0, 1.0));
+	glm::mat4 R6 = glm::rotate(float(-theta), glm::vec3(0.0, 0.0, 1.0));
 
-	double phi = glm::acos(glm::dot(glm::vec3(0, 0, 1), v));
-	glm::mat4 R2 = glm::rotate(phi, glm::vec3(0, 1, 0));
-	glm::mat4 R5 = glm::rotate(-phi, glm::vec3(0, 1, 0));
+	double phi = glm::acos(glm::dot(glm::vec3(0.0, 0.0, 1.0), v));
+	glm::mat4 R2 = glm::rotate(float(phi), glm::vec3(0.0, 1.0, 0.0));
+	glm::mat4 R5 = glm::rotate(float(-phi), glm::vec3(0.0, 1.0, 0.0));
 
 	double x1 = distribution(generator);
 	double x2 = distribution(generator);
@@ -67,8 +67,8 @@ void perturb(glm::vec3 &v, glm::vec3 &p){
 	double alpha = glm::acos(sqrt(1 - x1));
 	double beta = 2 * M_PI * x2;
 
-	glm::mat4 R3 = glm::rotate(alpha, glm::vec3(0, 1, 0));
-	glm::mat4 R4 = glm::rotate(beta, glm::vec3(0, 0, 1));
+	glm::mat4 R3 = glm::rotate(float(alpha), glm::vec3(0.0, 1.0, 0.0));
+	glm::mat4 R4 = glm::rotate(float(beta), glm::vec3(0.0, 0.0, 1.0));
 
 	p = glm::normalize(glm::vec3(R6 * R5 * R4 * R3 * R2 * R1 * glm::vec4(v, 0.0)));
 
