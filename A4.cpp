@@ -220,7 +220,8 @@ bool ray_color(
 											remaining_bounces - 1
 							);
 
-							glm::vec3 total_color = 0.3f * ((float(r_theta) * reflected_color) + (float(1 - r_theta) * trans_color));
+//							glm::vec3 total_color = 0.3f * ((float(r_theta) * reflected_color) + (float(1 - r_theta) * trans_color));
+							glm::vec3 total_color = 0.5f * trans_color;
 							col[0] += std::max(0.0f, std::min(1.0f, ks[0] * total_color[0]));
 							col[1] += std::max(0.0f, std::min(1.0f, ks[1] * total_color[1]));
 							col[2] += std::max(0.0f, std::min(1.0f, ks[2] * total_color[2]));
