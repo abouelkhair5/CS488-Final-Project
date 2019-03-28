@@ -113,19 +113,8 @@ bool ray_color(
 
       // dummy values to pass to hit, however their values aren't needed
       ray_intersection = false;
-      bool light_blocked = hit(
-              scene,
-              point_of_intersection,
-              l,
-              world_to_model,
-              dummy_t,
-              dummy_normal,
-              dummy_kd,
-              dummy_ks,
-              dummy_shininess,
-              dummy_transparency,
-              dummy_ior,
-              ray_intersection);
+      bool light_blocked = hit(scene, point_of_intersection, l, world_to_model, dummy_t, dummy_normal, dummy_kd,
+      				dummy_ks, dummy_shininess, dummy_transparency, dummy_ior, ray_intersection);
 
       if (!light_blocked) {
         // shoot a ray from POI to light source, if that ray intersects with an object
