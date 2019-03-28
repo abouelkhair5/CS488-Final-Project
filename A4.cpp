@@ -191,7 +191,24 @@ bool ray_color(
 					// we need to find where this refracted ray exits the object from which point we will send another ray to
 					// get us the colour refracted through our object
 					// so we cast the refracted ray from the point of intersection to find it's point of exit
-					ray_color(scene, point_of_intersection, transmitted, ambient, lights, trans_color, remaining_bounces - 1);
+					if(mat.m_glossy){
+						int glossy_rays = 4;
+						glm::vec3 perturbed_transmitted;
+						glm::vec3 color_part;
+
+						for (int i = 0; i < glossy_rays; i++) {
+							perturb(reflected, perturbed_transmitted);
+							color_part = glm::vec3(0.0f);
+
+							ray_color(scene, point_of_intersection, perturbed_transmitted, ambient, lights, color_part, remaining_bounces - 1);
+							trans_color += color_part;
+						}
+
+						trans_color = float(1.0 / glossy_rays) * trans_color;
+					}
+					else {
+						ray_color(scene, point_of_intersection, transmitted, ambient, lights, trans_color, remaining_bounces - 1);
+					}
 					trans_color[0] *= mat.m_kt[0];
 					trans_color[1] *= mat.m_kt[1];
 					trans_color[2] *= mat.m_kt[2];
