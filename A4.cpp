@@ -159,11 +159,12 @@ bool ray_color(
 				}
 
 				if (intersected_rays > 0) {
-					reflected_color = float(1.0 / intersected_rays) * reflected_color;
+					reflected_color = float(1.0 / 2 * intersected_rays) * reflected_color;
 				}
 			} else {
 				ray_color(scene, point_of_intersection, reflected, ambient, lights,
 									reflected_color, remaining_bounces - 1);
+				reflected_color = 0.5f * reflected_color;
     	}
 
 #ifdef REFRACTION
@@ -240,7 +241,6 @@ bool ray_color(
 					}
 				}
 			} else {
-				reflected_color = 0.5f * reflected_color;
 				col[0] += std::max(0.0f, std::min(1.0f, ks[0] * reflected_color[0]));
 				col[1] += std::max(0.0f, std::min(1.0f, ks[1] * reflected_color[1]));
 				col[2] += std::max(0.0f, std::min(1.0f, ks[2] * reflected_color[2]));
