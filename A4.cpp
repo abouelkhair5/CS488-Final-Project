@@ -142,110 +142,108 @@ bool ray_color(
     #ifdef REFLECTION
     // if reflection option is enabled and we haven't done all our recursive rays yet then we send another one
 		glm::vec3 reflected_color = glm::vec3(0.0);
-    if(remaining_bounces > 0)
-    {
-    	int glossy_rays = 4;
+    if(remaining_bounces > 0) {
+			int glossy_rays = 4;
 			glm::vec3 perturbed_reflected;
 			glm::vec3 reflected = reflect(ray_direction, normal);
 			glm::vec3 color_part;
 			bool reflect_ray_intersection;
 
-			for(int i = 0; i < glossy_rays; i++) {
+			for (int i = 0; i < glossy_rays; i++) {
 				perturb(reflected, perturbed_reflected);
 				color_part = glm::vec3(0.0f);
 
 				ray_color
-				(
-					scene,
-					point_of_intersection, perturbed_reflected,
-					ambient, lights,
-					color_part,
-					remaining_bounces - 1
-				);
+								(
+												scene,
+												point_of_intersection, perturbed_reflected,
+												ambient, lights,
+												color_part,
+												remaining_bounces - 1
+								);
 
 				reflected_color += float(1.0 / glossy_rays) * color_part;
 			}
-    }
 
-    #ifdef REFRACTION
-    if (transparency) {
-      // * we should send a reflective ray here as well but I am not going to worry about this right now*
+#ifdef REFRACTION
+			if (transparency) {
+				// * we should send a reflective ray here as well but I am not going to worry about this right now*
 
-      // the end goal we want to find the ray coming out of our object and get the color of that
-      // theta is the angle between the incident ray the normal
-      // cos phi is the angle between the normal and the refracted ray
-      double cos_theta = glm::dot(ray_direction, normal);
-      if (cos_theta < 0) {
-        // ray entering the object
-        double cos_phi_sq = 1 - ((1 - cos_theta * cos_theta) / ior);
+				// the end goal we want to find the ray coming out of our object and get the color of that
+				// theta is the angle between the incident ray the normal
+				// cos phi is the angle between the normal and the refracted ray
+				double cos_theta = glm::dot(ray_direction, normal);
+				if (cos_theta < 0) {
+					// ray entering the object
+					double cos_phi_sq = 1 - ((1 - cos_theta * cos_theta) / ior);
 
-        if (cos_phi_sq >= 0) {
-          // not a complete internal refraction
-          // refracted = sin_phi * b - normal * cos_phi where b along with normal form an
-          // orthonormal basis to the plane containing the the incident ray and the normal
-          glm::vec3 transmitted = ((ray_direction - (normal * float(cos_theta))) / float(ior)) -
-                                  (normal * float(sqrt(cos_phi_sq)));
+					if (cos_phi_sq >= 0) {
+						// not a complete internal refraction
+						// refracted = sin_phi * b - normal * cos_phi where b along with normal form an
+						// orthonormal basis to the plane containing the the incident ray and the normal
+						glm::vec3 transmitted = ((ray_direction - (normal * float(cos_theta))) / float(ior)) -
+																		(normal * float(sqrt(cos_phi_sq)));
 
-          // the ratio to blend reflection and refraction
-          double r0 = ((ior - 1) / (ior + 1)) * ((ior - 1) / (ior + 1));
-          double r_theta = r0 + ((1 - r0) * pow((1 - cos_theta), 5));
+						// the ratio to blend reflection and refraction
+						double r0 = ((ior - 1) / (ior + 1)) * ((ior - 1) / (ior + 1));
+						double r_theta = r0 + ((1 - r0) * pow((1 - cos_theta), 5));
 
-          glm::mat4 trans_model;
-          glm::vec3 trans_norm;
-          double trans_t = 0;
-          glm::vec3 trans_kd;
-          glm::vec3 trans_ks;
-          double trans_shininess;
-          bool trans_transparency;
-          double trans_ior;
-          bool trans_ray_intersection = false;
-          glm::vec3 trans_color = glm::vec3(0.0);
+						glm::mat4 trans_model;
+						glm::vec3 trans_norm;
+						double trans_t = 0;
+						glm::vec3 trans_kd;
+						glm::vec3 trans_ks;
+						double trans_shininess;
+						bool trans_transparency;
+						double trans_ior;
+						bool trans_ray_intersection = false;
+						glm::vec3 trans_color = glm::vec3(0.0);
 
-          // we need to find where this refracted ray exits the object from which point we will send another ray to
-          // get us the colour refracted through our object
-          // so we cast the refracted ray from the point of intersection to find it's point of exit
-          bool reflected_ray_exits = hit(
-                  scene,
-                  point_of_intersection,
-                  transmitted,
-                  trans_model,
-                  trans_t,
-                  trans_norm,
-                  trans_kd,
-                  trans_ks,
-                  trans_shininess,
-                  trans_transparency,
-                  trans_ior,
-                  trans_ray_intersection);
+						// we need to find where this refracted ray exits the object from which point we will send another ray to
+						// get us the colour refracted through our object
+						// so we cast the refracted ray from the point of intersection to find it's point of exit
+						bool reflected_ray_exits = hit(
+										scene,
+										point_of_intersection,
+										transmitted,
+										trans_model,
+										trans_t,
+										trans_norm,
+										trans_kd,
+										trans_ks,
+										trans_shininess,
+										trans_transparency,
+										trans_ior,
+										trans_ray_intersection);
 
-          if (reflected_ray_exits) {
-            // this should always be true
-            glm::vec3 exit_point = point_of_intersection + float(trans_t) * transmitted;
+						if (reflected_ray_exits) {
+							// this should always be true
+							glm::vec3 exit_point = point_of_intersection + float(trans_t) * transmitted;
 
-            // the exiting ray has the same direction as the entering ray just a different origin
-            // we want the colour of the exiting ray
-            ray_color(
-                    scene,
-                    exit_point, transmitted,
-                    ambient, lights,
-                    trans_color,
-                    remaining_bounces - 1
-            );
+							// the exiting ray has the same direction as the entering ray just a different origin
+							// we want the colour of the exiting ray
+							ray_color(
+											scene,
+											exit_point, transmitted,
+											ambient, lights,
+											trans_color,
+											remaining_bounces - 1
+							);
 
-						glm::vec3 total_color = ((float(r_theta) * reflected_color) + (float(1 - r_theta) * trans_color));
-            col[0] += std::max(0.0f, std::min(1.0f, ks[0] * total_color[0]));
-            col[1] += std::max(0.0f, std::min(1.0f, ks[1] * total_color[1]));
-            col[2] += std::max(0.0f, std::min(1.0f, ks[2] * total_color[2]));
+							glm::vec3 total_color = 0.3f * ((float(r_theta) * reflected_color) + (float(1 - r_theta) * trans_color));
+							col[0] += std::max(0.0f, std::min(1.0f, ks[0] * total_color[0]));
+							col[1] += std::max(0.0f, std::min(1.0f, ks[1] * total_color[1]));
+							col[2] += std::max(0.0f, std::min(1.0f, ks[2] * total_color[2]));
 
-          }
-        }
-      }
-    }
-    else {
-			reflected_color = 0.5f * reflected_color;
-			col[0] += std::max(0.0f, std::min(1.0f, ks[0] * reflected_color[0]));
-			col[1] += std::max(0.0f, std::min(1.0f, ks[1] * reflected_color[1]));
-			col[2] += std::max(0.0f, std::min(1.0f, ks[2] * reflected_color[2]));
+						}
+					}
+				}
+			} else {
+				reflected_color = 0.5f * reflected_color;
+				col[0] += std::max(0.0f, std::min(1.0f, ks[0] * reflected_color[0]));
+				col[1] += std::max(0.0f, std::min(1.0f, ks[1] * reflected_color[1]));
+				col[2] += std::max(0.0f, std::min(1.0f, ks[2] * reflected_color[2]));
+			}
 		}
     #endif
 		#endif
