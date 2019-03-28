@@ -16,6 +16,9 @@
 #define REFRACTION
 #define SHOW_PROGRESS
 
+std::default_random_engine generator;
+std::uniform_real_distribution<double> distribution(0.0, 1.0);
+
 glm::mat4 generate_dcs_to_world_mat(
 	uint width, uint height,
 	int d, double fov,
@@ -144,9 +147,15 @@ bool ray_color(
 		glm::vec3 reflected_color = glm::vec3(0.0);
     if(remaining_bounces > 0)
     {
+			double x1 = distribution(generator);
+			double x2 = distribution(generator);
+
+			double alpha = glm::acos(sqrt(1 - x1));
+			double beta = 2 * M_PI * x2;
+
     	glm::vec3 normal2 = cross(ray_direction, normal);
-    	glm::vec3 perturbed_normal;
-    	perturb(normal, normal2, perturbed_normal);
+    	glm::vec3 perturbed_normal = glm::normalize(glm::vec3(glm::rotate(float(beta), normal) * glm::rotate(float(alpha), normal2) * glm::vec4(normal, 0)));
+
       glm::vec3 reflected =  glm::normalize(ray_direction - 2*glm::dot(ray_direction, perturbed_normal)* perturbed_normal);
       //reflect(ray_direction, perturbed_normal);
       bool reflect_ray_intersection = false;
