@@ -60,7 +60,7 @@ void perturb(glm::vec3 &v, glm::vec3 &p){
 //  double alpha = glm::acos(sqrt(1 - x1));
 //  double beta = 2 * M_PI * x2;
 
-  p = v + (0.1f * glm::vec3(x1, x2, x3));
+  p = glm::normalize(v + (0.1f * glm::vec3(x1, x2, x3)));
 }
 
 bool ray_color(
@@ -152,12 +152,6 @@ bool ray_color(
 			bool reflect_ray_intersection;
 
 			for(int i = 0; i < glossy_rays; i++) {
-				double x1 = distribution(generator);
-				double x2 = distribution(generator);
-
-				double alpha = glm::acos(sqrt(1 - x1));
-				double beta = 2 * M_PI * x2;
-
 				perturb(normal, perturbed_normal);
 				reflected = reflect(ray_direction, perturbed_normal);
 				color_part = glm::vec3(0.0f);
