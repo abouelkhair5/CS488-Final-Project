@@ -29,7 +29,6 @@ void A4_Render(
 
 void perturb(
 		glm::vec3 &v,
-		glm::vec3 &n,
 		glm::vec3 & p
 );
 

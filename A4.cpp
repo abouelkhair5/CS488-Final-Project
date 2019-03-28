@@ -52,14 +52,15 @@ glm::mat4 generate_dcs_to_world_mat(
 	return world;
 }
 
-void perturb(glm::vec3 &v, glm::vec3 &n, glm::vec3 & p){
+void perturb(glm::vec3 &v, glm::vec3 &p){
   double x1 = distribution(generator);
   double x2 = distribution(generator);
+	double x3 = distribution(generator);
 
-  double alpha = glm::acos(sqrt(1 - x1));
-  double beta = 2 * M_PI * x2;
+//  double alpha = glm::acos(sqrt(1 - x1));
+//  double beta = 2 * M_PI * x2;
 
-  p = glm::normalize(glm::vec3(glm::rotate(float(beta), v) * glm::rotate(float(alpha), n) * glm::vec4(v, 0)));
+  p = v + (0.1f * glm::vec3(x1, x2, x3));
 }
 
 bool ray_color(
@@ -157,8 +158,7 @@ bool ray_color(
 				double alpha = glm::acos(sqrt(1 - x1));
 				double beta = 2 * M_PI * x2;
 
-				perturbed_normal = glm::normalize(glm::vec3(glm::rotate(float(beta), normal) * glm::rotate(float(alpha), normal2) * glm::vec4(normal, 0)));
-//				perturb(normal, normal2, perturbed_normal);
+				perturb(normal, perturbed_normal);
 				reflected = reflect(ray_direction, perturbed_normal);
 				color_part = glm::vec3(0.0f);
 
