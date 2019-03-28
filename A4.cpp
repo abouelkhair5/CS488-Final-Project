@@ -143,21 +143,30 @@ bool ray_color(
 		glm::vec3 reflected_color = glm::vec3(0.0);
     if(remaining_bounces > 0)
     {
+    	int glossy_rays = 4;
     	glm::vec3 normal2 = cross(ray_direction, normal);
 			glm::vec3 perturbed_normal;
-			perturb(normal, normal2, perturbed_normal);
+			glm::vec3 reflected;
+			glm::vec3 color_part;
+			bool reflect_ray_intersection;
 
-			glm::vec3 reflected = reflect(ray_direction, perturbed_normal);
-      bool reflect_ray_intersection = false;
+			for(int i = 0; i < glossy_rays; i++) {
+				perturb(normal, normal2, perturbed_normal);
+				reflected = reflect(ray_direction, perturbed_normal);
+				reflect_ray_intersection = false;
+				color_part = glm::vec3(0.0f);
 
-      reflect_ray_intersection = ray_color
-							(
-											scene,
-											point_of_intersection, reflected,
-											ambient, lights,
-											reflected_color,
-											remaining_bounces - 1
-							);
+				reflect_ray_intersection = ray_color
+								(
+												scene,
+												point_of_intersection, reflected,
+												ambient, lights,
+												color_part,
+												remaining_bounces - 1
+								);
+
+				reflected_color += float(1 / glossy_rays) * color_part;
+			}
     }
 
     #ifdef REFRACTION
