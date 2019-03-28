@@ -59,7 +59,7 @@ void perturb(glm::vec3 &v, glm::vec3 &p){
 	double alpha = glm::acos(pow(1 - x1, 1.0/1000.000));
 	double beta = 2 * M_PI * x2;
 
-    glm::vec3 n = glm::vec3(0, 1, v.y/v.z);
+	glm::vec3 n = glm::vec3(0, 1, v.y/v.z);
 	glm::mat4 R1 = glm::rotate(float(alpha), n);
 	glm::mat4 R2 = glm::rotate(float(beta), v);
 
