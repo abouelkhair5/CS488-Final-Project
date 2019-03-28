@@ -79,7 +79,7 @@ bool ray_color(
 
   glm::vec3 normal;
   double t;
-
+	PhongMaterial mat;
 	bool glossy = false;
   glm::vec3 kd;
   glm::vec3 ks;
@@ -90,7 +90,7 @@ bool ray_color(
 
 	glm::mat4 world_to_model = glm::mat4();
 	bool ray_intersection = false;
-	hit(scene, eye, ray_direction, world_to_model, t, normal, kd, ks, shininess, transparency, ior, ray_intersection);
+	hit(scene, eye, ray_direction, world_to_model, t, normal, mat, ray_intersection);
 
 	if(ray_intersection) {
     col[0] = kd[0] * ambient[0];
@@ -101,6 +101,7 @@ bool ray_color(
     glm::vec3 dummy_normal, dummy_kd, dummy_ks;
     double dummy_t, dummy_shininess, dummy_ior;
     bool dummy_transparency;
+    PhongMaterial dummy_mat;
 
     // loop over light sources to check for shadows
     for (Light *light: lights) {
@@ -114,8 +115,7 @@ bool ray_color(
 
       // dummy values to pass to hit, however their values aren't needed
       ray_intersection = false;
-      bool light_blocked = hit(scene, point_of_intersection, l, world_to_model, dummy_t, dummy_normal, dummy_kd,
-      				dummy_ks, dummy_shininess, dummy_transparency, dummy_ior, ray_intersection);
+      bool light_blocked = hit(scene, point_of_intersection, l, world_to_model, dummy_t, dummy_normal, dummy_mat, ray_intersection);
 
       if (!light_blocked) {
         // shoot a ray from POI to light source, if that ray intersects with an object
@@ -192,6 +192,7 @@ bool ray_color(
 						glm::mat4 trans_model;
 						glm::vec3 trans_norm;
 						double trans_t = 0;
+						PhongMaterial trans_mat;
 						glm::vec3 trans_kd;
 						glm::vec3 trans_ks;
 						double trans_shininess;
@@ -204,7 +205,7 @@ bool ray_color(
 						// get us the colour refracted through our object
 						// so we cast the refracted ray from the point of intersection to find it's point of exit
 						bool reflected_ray_exits = hit(scene, point_of_intersection, transmitted, trans_model, trans_t, trans_norm,
-										trans_kd, trans_ks, trans_shininess, trans_transparency, trans_ior, trans_ray_intersection);
+										trans_mat, trans_ray_intersection);
 
 						if (reflected_ray_exits) {
 							// this should always be true
@@ -261,11 +262,7 @@ bool hit(
 	const glm::mat4 &world_to_model,
 	double &ray_closest_t,
 	glm::vec3 &intersection_normal,
-	glm::vec3 &kd,
-	glm::vec3 &ks,
-	double &shininess,
-	bool &transparency,
-	double &ior,
+	PhongMaterial &mat,
 	bool &ray_intersection
 ){
 	glm::mat4 world_to_new_model = scene->get_inverse() * world_to_model;
@@ -288,11 +285,13 @@ bool hit(
 				ray_closest_t = t;
 				intersection_normal = glm::normalize(glm::vec3(glm::transpose(world_to_new_model) * glm::vec4(normal, 0.0)));
 				PhongMaterial* phong_mat = static_cast<PhongMaterial *>(gn->m_material);
-				kd = phong_mat->m_kd;
-				ks = phong_mat->m_ks;
-				shininess = phong_mat->m_shininess;
-				transparency = phong_mat->m_transparent;
-				ior = phong_mat->m_ior;
+				mat.m_kd = phong_mat->m_kd;
+				mat.m_ks = phong_mat->m_ks;
+				mat.m_kt = phong_mat->m_kt;
+				mat.m_shininess = phong_mat->m_shininess;
+				mat.m_transparent = phong_mat->m_transparent;
+				mat.m_glossy = phong_mat->m_glossy;
+				mat.m_ior = phong_mat->m_ior;
 			}
 			//set pixel to color of object
 		}
@@ -301,7 +300,7 @@ bool hit(
 		// recurse on other children 
 		for(SceneNode *child: scene->children){
 			hit(child, ray_origin_in_model, ray_direction_in_model, world_to_new_model,
-				ray_closest_t, intersection_normal, kd, ks, shininess, transparency, ior, ray_intersection);
+				ray_closest_t, intersection_normal, mat, ray_intersection);
 		}
 	}
 	return ray_intersection;

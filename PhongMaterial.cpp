@@ -2,6 +2,16 @@
 
 #include "PhongMaterial.hpp"
 
+PhongMaterial::PhongMaterial()
+: m_kd(glm::vec3(0.0f))
+, m_ks(glm::vec3(0.0f))
+, m_kt(glm::vec3(0.0f))
+, m_shininess(0)
+, m_transparent(false)
+, m_glossy(false)
+, m_ior(0)
+{}
+
 PhongMaterial::PhongMaterial(
 	const glm::vec3& kd, const glm::vec3& ks, double shininess, bool glossy)
 	: m_kd(kd)

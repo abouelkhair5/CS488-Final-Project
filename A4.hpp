@@ -8,6 +8,7 @@
 #include "GeometryNode.hpp"
 #include "Light.hpp"
 #include "Image.hpp"
+#include "PhongMaterial.hpp"
 
 void A4_Render(
 		// What to render
@@ -47,11 +48,7 @@ bool hit(
 	const glm::mat4 &world_to_model,
 	double &ray_closest_t,
 	glm::vec3 &intersection_normal,
-	glm::vec3 &kd,
-	glm::vec3 &ks,
-	double &shininess,
-	bool &transparency,
-	double &ior,
+	PhongMaterial &mat,
 	bool& ray_intersection
 );
 
