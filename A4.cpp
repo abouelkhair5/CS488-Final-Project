@@ -172,7 +172,7 @@ bool ray_color(
 												remaining_bounces - 1
 								);
 
-				reflected_color += float(1 / glossy_rays) * color_part;
+				reflected_color += float(1.0 / glossy_rays) * color_part;
 			}
     }
 
