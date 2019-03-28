@@ -183,8 +183,7 @@ bool ray_color(
 						// not a complete internal refraction
 						// refracted = sin_phi * b - normal * cos_phi where b along with normal form an
 						// orthonormal basis to the plane containing the the incident ray and the normal
-						glm::vec3 transmitted = ((ray_direction - (normal * float(cos_theta))) / float(ior)) -
-																		(normal * float(sqrt(cos_phi_sq)));
+						glm::vec3 transmitted = glm::refract(ray_direction, normal, float(1/ior));
 
 						// the ratio to blend reflection and refraction
 						double r0 = ((ior - 1) / (ior + 1)) * ((ior - 1) / (ior + 1));
