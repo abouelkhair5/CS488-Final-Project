@@ -62,8 +62,7 @@ void perturb(glm::vec3 &v, glm::vec3 &n, glm::vec3 & p){
   double alpha = glm::acos(sqrt(1 - x1));
   double beta = 2 * M_PI * x2;
 
-  glm::vec4 temp_p = glm::normalize(glm::rotate(float(beta), v) * glm::rotate(float(alpha), n) * glm::vec4(v, 0));
-  p = glm::vec3(temp_p);
+  p = glm::normalize(glm::vec3(glm::rotate(float(beta), v) * glm::rotate(float(alpha), n) * glm::vec4(v, 0)));
 }
 
 bool ray_color(
@@ -154,9 +153,11 @@ bool ray_color(
 			double beta = 2 * M_PI * x2;
 
     	glm::vec3 normal2 = cross(ray_direction, normal);
-    	glm::vec3 perturbed_normal = glm::normalize(glm::vec3(glm::rotate(float(beta), normal) * glm::rotate(float(alpha), normal2) * glm::vec4(normal, 0)));
+//    	glm::vec3 perturbed_normal = glm::normalize(glm::vec3(glm::rotate(float(beta), normal) * glm::rotate(float(alpha), normal2) * glm::vec4(normal, 0)));
+			glm::vec3 perturbed_normal;
+			perturb(normal, normal2, perturbed_normal);
 
-      glm::vec3 reflected =  glm::normalize(ray_direction - 2*glm::dot(ray_direction, perturbed_normal)* perturbed_normal);
+			glm::vec3 reflected = glm::normalize(ray_direction - 2*glm::dot(ray_direction, perturbed_normal) * perturbed_normal);
       //reflect(ray_direction, perturbed_normal);
       bool reflect_ray_intersection = false;
 
