@@ -182,10 +182,10 @@ bool ray_color(
 					transmitted = glm::refract(ray_direction, -normal, float(eta));
 				}
 				// ray entering the object
-				double cos_phi_sq = 1 - ((1 - cos_theta * cos_theta) / eta);
+				double cos_phi_sq = 1.0 - ((1.0 - cos_theta * cos_theta) / eta);
 				// the ratio to blend reflection and refraction
-				double r0 = ((eta - 1) / (eta + 1)) * ((eta - 1) / (eta + 1));
-				double r_theta = r0 + ((1 - r0) * pow((1 - cos_theta), 5));
+				double r0 = ((eta - 1.0) / (eta + 1.0)) * ((eta - 1.0) / (eta + 1.0));
+				double r_theta = r0 + ((1.0 - r0) * pow((1.0 - cos_theta), 5));
 				if (cos_phi_sq >= 0) {
 					// we need to find where this refracted ray exits the object from which point we will send another ray to
 					// get us the colour refracted through our object
