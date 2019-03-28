@@ -80,27 +80,19 @@ bool ray_color(
   glm::vec3 normal;
   double t;
 	PhongMaterial mat;
-	bool glossy = false;
-  glm::vec3 kd;
-  glm::vec3 ks;
-  double shininess;
-
-  bool transparency;
-  double ior;
 
 	glm::mat4 world_to_model = glm::mat4();
 	bool ray_intersection = false;
 	hit(scene, eye, ray_direction, world_to_model, t, normal, mat, ray_intersection);
 
 	if(ray_intersection) {
-    col[0] = kd[0] * ambient[0];
-    col[1] = kd[1] * ambient[1];
-    col[2] = kd[2] * ambient[2];
+    col[0] = mat.m_kd[0] * ambient[0];
+    col[1] = mat.m_kd[1] * ambient[1];
+    col[2] = mat.m_kd[2] * ambient[2];
 
     glm::vec3 point_of_intersection = eye + (float(t) * ray_direction);
-    glm::vec3 dummy_normal, dummy_kd, dummy_ks;
-    double dummy_t, dummy_shininess, dummy_ior;
-    bool dummy_transparency;
+    glm::vec3 dummy_normal;
+    double dummy_t;
     PhongMaterial dummy_mat;
 
     // loop over light sources to check for shadows
@@ -124,11 +116,11 @@ bool ray_color(
         glm::vec3 v = normalize(eye - point_of_intersection);
         glm::vec3 r = glm::normalize(-l + (2 * glm::dot(l, normal)) * normal);
         double l_dot_n = glm::dot(l, normal);
-        double r_dot_v_to_p = std::pow(glm::dot(r, v), shininess);
+        double r_dot_v_to_p = std::pow(glm::dot(r, v), mat.m_shininess);
 
-        col[0] += std::max(0.0, std::min(1.0, (kd[0] * l_dot_n * I_in[0]) + (ks[0] * r_dot_v_to_p * I_in[0])));
-        col[1] += std::max(0.0, std::min(1.0, (kd[1] * l_dot_n * I_in[1]) + (ks[1] * r_dot_v_to_p * I_in[1])));
-        col[2] += std::max(0.0, std::min(1.0, (kd[2] * l_dot_n * I_in[2]) + (ks[2] * r_dot_v_to_p * I_in[2])));
+        col[0] += std::max(0.0, std::min(1.0, (mat.m_kd[0] * l_dot_n * I_in[0]) + (mat.m_ks[0] * r_dot_v_to_p * I_in[0])));
+        col[1] += std::max(0.0, std::min(1.0, (mat.m_kd[1] * l_dot_n * I_in[1]) + (mat.m_ks[1] * r_dot_v_to_p * I_in[1])));
+        col[2] += std::max(0.0, std::min(1.0, (mat.m_kd[2] * l_dot_n * I_in[2]) + (mat.m_ks[2] * r_dot_v_to_p * I_in[2])));
       }
     }
 
@@ -138,7 +130,7 @@ bool ray_color(
 		glm::vec3 reflected_color = glm::vec3(0.0);
 		glm::vec3 reflected = reflect(ray_direction, normal);
     if(remaining_bounces > 0) {
-    	if(glossy) {
+    	if(mat.m_glossy) {
 				int glossy_rays = 4;
 				int intersected_rays = 0;
 				glm::vec3 perturbed_reflected;
@@ -168,7 +160,7 @@ bool ray_color(
     	}
 
 #ifdef REFRACTION
-			if (transparency) {
+			if (mat.m_transparent) {
 				// * we should send a reflective ray here as well but I am not going to worry about this right now*
 
 				// the end goal we want to find the ray coming out of our object and get the color of that
@@ -177,27 +169,22 @@ bool ray_color(
 				double cos_theta = glm::dot(ray_direction, normal);
 				if (cos_theta < 0) {
 					// ray entering the object
-					double cos_phi_sq = 1 - ((1 - cos_theta * cos_theta) / ior);
+					double cos_phi_sq = 1 - ((1 - cos_theta * cos_theta) / mat.m_ior);
 
 					if (cos_phi_sq >= 0) {
 						// not a complete internal refraction
 						// refracted = sin_phi * b - normal * cos_phi where b along with normal form an
 						// orthonormal basis to the plane containing the the incident ray and the normal
-						glm::vec3 transmitted = glm::refract(ray_direction, normal, float(1/ior));
+						glm::vec3 transmitted = glm::refract(ray_direction, normal, float(1/mat.m_ior));
 
 						// the ratio to blend reflection and refraction
-						double r0 = ((ior - 1) / (ior + 1)) * ((ior - 1) / (ior + 1));
+						double r0 = ((mat.m_ior - 1) / (mat.m_ior + 1)) * ((mat.m_ior - 1) / (mat.m_ior + 1));
 						double r_theta = r0 + ((1 - r0) * pow((1 - cos_theta), 5));
 
 						glm::mat4 trans_model;
 						glm::vec3 trans_norm;
 						double trans_t = 0;
 						PhongMaterial trans_mat;
-						glm::vec3 trans_kd;
-						glm::vec3 trans_ks;
-						double trans_shininess;
-						bool trans_transparency;
-						double trans_ior;
 						bool trans_ray_intersection = false;
 						glm::vec3 trans_color = glm::vec3(0.0);
 
@@ -223,17 +210,17 @@ bool ray_color(
 
 //							glm::vec3 total_color = 0.3f * ((float(r_theta) * reflected_color) + (float(1 - r_theta) * trans_color));
 							glm::vec3 total_color = 0.5f * trans_color;
-							col[0] += std::max(0.0f, std::min(1.0f, ks[0] * total_color[0]));
-							col[1] += std::max(0.0f, std::min(1.0f, ks[1] * total_color[1]));
-							col[2] += std::max(0.0f, std::min(1.0f, ks[2] * total_color[2]));
+							col[0] += std::max(0.0f, std::min(1.0f, mat.m_ks[0] * total_color[0]));
+							col[1] += std::max(0.0f, std::min(1.0f, mat.m_ks[1] * total_color[1]));
+							col[2] += std::max(0.0f, std::min(1.0f, mat.m_ks[2] * total_color[2]));
 
 						}
 					}
 				}
 			} else {
-				col[0] += std::max(0.0f, std::min(1.0f, ks[0] * reflected_color[0]));
-				col[1] += std::max(0.0f, std::min(1.0f, ks[1] * reflected_color[1]));
-				col[2] += std::max(0.0f, std::min(1.0f, ks[2] * reflected_color[2]));
+				col[0] += std::max(0.0f, std::min(1.0f, mat.m_ks[0] * reflected_color[0]));
+				col[1] += std::max(0.0f, std::min(1.0f, mat.m_ks[1] * reflected_color[1]));
+				col[2] += std::max(0.0f, std::min(1.0f, mat.m_ks[2] * reflected_color[2]));
 			}
 		}
     #endif
