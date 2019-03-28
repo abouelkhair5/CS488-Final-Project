@@ -160,17 +160,16 @@ bool ray_color(
 				perturbed_normal = glm::normalize(glm::vec3(glm::rotate(float(beta), normal) * glm::rotate(float(alpha), normal2) * glm::vec4(normal, 0)));
 //				perturb(normal, normal2, perturbed_normal);
 				reflected = reflect(ray_direction, perturbed_normal);
-				reflect_ray_intersection = false;
 				color_part = glm::vec3(0.0f);
 
-				reflect_ray_intersection = ray_color
-								(
-												scene,
-												point_of_intersection, reflected,
-												ambient, lights,
-												color_part,
-												remaining_bounces - 1
-								);
+				ray_color
+				(
+					scene,
+					point_of_intersection, reflected,
+					ambient, lights,
+					color_part,
+					remaining_bounces - 1
+				);
 
 				reflected_color += float(1.0 / glossy_rays) * color_part;
 			}
