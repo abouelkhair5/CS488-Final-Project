@@ -171,6 +171,7 @@ bool ray_color(
 				// theta is the angle between the incident ray the normal
 				// cos phi is the angle between the normal and the refracted ray
 				glm::vec3 transmitted;
+				glm::vec3 trans_color = glm::vec3(0.0);
 				double cos_theta = glm::dot(ray_direction, normal);
 				double eta = mat.m_ior;
 				if (cos_theta < 0) {
@@ -182,28 +183,23 @@ bool ray_color(
 				}
 				// ray entering the object
 				double cos_phi_sq = 1 - ((1 - cos_theta * cos_theta) / eta);
+				// the ratio to blend reflection and refraction
+				double r0 = ((eta - 1) / (eta + 1)) * ((eta - 1) / (eta + 1));
+				double r_theta = r0 + ((1 - r0) * pow((1 - cos_theta), 5));
 				if (cos_phi_sq >= 0) {
-
-					// the ratio to blend reflection and refraction
-					double r0 = ((eta - 1) / (eta + 1)) * ((eta - 1) / (eta + 1));
-					double r_theta = r0 + ((1 - r0) * pow((1 - cos_theta), 5));
-
-					bool trans_ray_intersection = false;
-					glm::vec3 trans_color = glm::vec3(0.0);
-
 					// we need to find where this refracted ray exits the object from which point we will send another ray to
 					// get us the colour refracted through our object
 					// so we cast the refracted ray from the point of intersection to find it's point of exit
-					bool reflected_ray_exits = ray_color(scene, point_of_intersection, transmitted, ambient, lights, trans_color, remaining_bounces - 1);
+					ray_color(scene, point_of_intersection, transmitted, ambient, lights, trans_color, remaining_bounces - 1);
 					trans_color[0] *= mat.m_kt[0];
 					trans_color[1] *= mat.m_kt[1];
 					trans_color[2] *= mat.m_kt[2];
 
-					glm::vec3 total_color = 0.3f * ((float(r_theta) * reflected_color) + (float(1 - r_theta) * trans_color));
-					col[0] += std::max(0.0f, std::min(1.0f, total_color[0]));
-					col[1] += std::max(0.0f, std::min(1.0f, total_color[1]));
-					col[2] += std::max(0.0f, std::min(1.0f, total_color[2]));
 				}
+				glm::vec3 total_color = 0.3f * ((float(r_theta) * reflected_color) + (float(1 - r_theta) * trans_color));
+				col[0] += std::max(0.0f, std::min(1.0f, total_color[0]));
+				col[1] += std::max(0.0f, std::min(1.0f, total_color[1]));
+				col[2] += std::max(0.0f, std::min(1.0f, total_color[2]));
 			} else {
 				col[0] += std::max(0.0f, std::min(1.0f, reflected_color[0]));
 				col[1] += std::max(0.0f, std::min(1.0f, reflected_color[1]));
