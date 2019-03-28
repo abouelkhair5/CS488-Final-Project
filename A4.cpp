@@ -150,12 +150,10 @@ bool ray_color(
 			double beta = 2 * M_PI * x2;
 
     	glm::vec3 normal2 = cross(ray_direction, normal);
-//    	glm::vec3 perturbed_normal = glm::normalize(glm::vec3(glm::rotate(float(beta), normal) * glm::rotate(float(alpha), normal2) * glm::vec4(normal, 0)));
 			glm::vec3 perturbed_normal;
 			perturb(normal, normal2, perturbed_normal);
 
-			glm::vec3 reflected = glm::normalize(ray_direction - 2*glm::dot(ray_direction, perturbed_normal) * perturbed_normal);
-      //reflect(ray_direction, perturbed_normal);
+			glm::vec3 reflected = reflect(ray_direction, perturbed_normal);
       bool reflect_ray_intersection = false;
 
       reflect_ray_intersection = ray_color
