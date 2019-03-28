@@ -80,6 +80,7 @@ bool ray_color(
   glm::vec3 normal;
   double t;
 
+	bool glossy = false;
   glm::vec3 kd;
   glm::vec3 ks;
   double shininess;
@@ -136,7 +137,6 @@ bool ray_color(
     // if reflection option is enabled and we haven't done all our recursive rays yet then we send another one
 		glm::vec3 reflected_color = glm::vec3(0.0);
 		glm::vec3 reflected = reflect(ray_direction, normal);
-    bool glossy = false;
     if(remaining_bounces > 0) {
     	if(glossy) {
 				int glossy_rays = 4;
