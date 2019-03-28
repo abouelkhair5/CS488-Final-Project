@@ -204,19 +204,8 @@ bool ray_color(
 						// we need to find where this refracted ray exits the object from which point we will send another ray to
 						// get us the colour refracted through our object
 						// so we cast the refracted ray from the point of intersection to find it's point of exit
-						bool reflected_ray_exits = hit(
-										scene,
-										point_of_intersection,
-										transmitted,
-										trans_model,
-										trans_t,
-										trans_norm,
-										trans_kd,
-										trans_ks,
-										trans_shininess,
-										trans_transparency,
-										trans_ior,
-										trans_ray_intersection);
+						bool reflected_ray_exits = hit(scene, point_of_intersection, transmitted, trans_model, trans_t, trans_norm,
+										trans_kd, trans_ks, trans_shininess, trans_transparency, trans_ior, trans_ray_intersection);
 
 						if (reflected_ray_exits) {
 							// this should always be true
