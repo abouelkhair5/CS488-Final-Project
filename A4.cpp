@@ -175,6 +175,7 @@ bool ray_color(
 				double cos_theta = glm::dot(ray_direction, normal);
 				double eta = mat.m_ior;
 				if (cos_theta < 0) {
+					cos_theta *= -1.0;
 					eta = 1.0/eta;
 					transmitted = glm::refract(ray_direction, normal, float(eta));
 				}
@@ -196,7 +197,7 @@ bool ray_color(
 					trans_color[2] *= mat.m_kt[2];
 
 				}
-				glm::vec3 total_color = 0.3f * ((float(r_theta) * reflected_color) + (float(1 - r_theta) * trans_color));
+				glm::vec3 total_color = ((float(r_theta) * reflected_color) + (float(1 - r_theta) * trans_color));
 				col[0] += std::max(0.0f, std::min(1.0f, total_color[0]));
 				col[1] += std::max(0.0f, std::min(1.0f, total_color[1]));
 				col[2] += std::max(0.0f, std::min(1.0f, total_color[2]));
