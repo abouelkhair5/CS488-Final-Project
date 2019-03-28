@@ -53,14 +53,25 @@ glm::mat4 generate_dcs_to_world_mat(
 }
 
 void perturb(glm::vec3 &v, glm::vec3 &p){
-  double x1 = distribution(generator);
-  double x2 = distribution(generator);
-	double x3 = distribution(generator);
+	double theta = glm::asin(glm::dot(glm::vec3(0, 1, 0), v));
+	glm::mat4 R1 = glm::rotate(theta, glm::vec3(0, 0, 1));
+	glm::mat4 R6 = glm::rotate(-theta, glm::vec3(0, 0, 1));
 
-//  double alpha = glm::acos(sqrt(1 - x1));
-//  double beta = 2 * M_PI * x2;
+	double phi = glm::acos(glm::dot(glm::vec3(0, 0, 1), v));
+	glm::mat4 R2 = glm::rotate(phi, glm::vec3(0, 1, 0));
+	glm::mat4 R5 = glm::rotate(-phi, glm::vec3(0, 1, 0));
 
-  p = glm::normalize(v + (0.1f * glm::vec3(x1, x2, x3)));
+	double x1 = distribution(generator);
+	double x2 = distribution(generator);
+
+	double alpha = glm::acos(sqrt(1 - x1));
+	double beta = 2 * M_PI * x2;
+
+	glm::mat4 R3 = glm::rotate(alpha, glm::vec3(0, 1, 0));
+	glm::mat4 R4 = glm::rotate(beta, glm::vec3(0, 0, 1));
+
+	p = glm::normalize(glm::vec3(R6 * R5 * R4 * R3 * R2 * R1 * glm::vec4(v, 0.0)));
+
 }
 
 bool ray_color(
