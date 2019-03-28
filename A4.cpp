@@ -197,7 +197,7 @@ bool ray_color(
 						glm::vec3 color_part;
 
 						for (int i = 0; i < glossy_rays; i++) {
-							perturb(reflected, perturbed_transmitted);
+							perturb(transmitted, perturbed_transmitted);
 							color_part = glm::vec3(0.0f);
 
 							ray_color(scene, point_of_intersection, perturbed_transmitted, ambient, lights, color_part, remaining_bounces - 1);
