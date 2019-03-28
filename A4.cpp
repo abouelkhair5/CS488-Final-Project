@@ -145,21 +145,19 @@ bool ray_color(
     if(remaining_bounces > 0)
     {
     	int glossy_rays = 4;
-    	glm::vec3 normal2 = cross(ray_direction, normal);
-			glm::vec3 perturbed_normal;
-			glm::vec3 reflected;
+			glm::vec3 perturbed_reflected;
+			glm::vec3 reflected = reflect(ray_direction, normal);
 			glm::vec3 color_part;
 			bool reflect_ray_intersection;
 
 			for(int i = 0; i < glossy_rays; i++) {
-				perturb(normal, perturbed_normal);
-				reflected = reflect(ray_direction, perturbed_normal);
+				perturb(reflected, perturbed_reflected);
 				color_part = glm::vec3(0.0f);
 
 				ray_color
 				(
 					scene,
-					point_of_intersection, reflected,
+					point_of_intersection, perturbed_reflected,
 					ambient, lights,
 					color_part,
 					remaining_bounces - 1
