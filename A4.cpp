@@ -143,12 +143,6 @@ bool ray_color(
 		glm::vec3 reflected_color = glm::vec3(0.0);
     if(remaining_bounces > 0)
     {
-			double x1 = distribution(generator);
-			double x2 = distribution(generator);
-
-			double alpha = glm::acos(sqrt(1 - x1));
-			double beta = 2 * M_PI * x2;
-
     	glm::vec3 normal2 = cross(ray_direction, normal);
 			glm::vec3 perturbed_normal;
 			perturb(normal, normal2, perturbed_normal);
