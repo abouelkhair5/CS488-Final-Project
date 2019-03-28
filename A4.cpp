@@ -53,9 +53,6 @@ glm::mat4 generate_dcs_to_world_mat(
 }
 
 void perturb(glm::vec3 &v, glm::vec3 &n, glm::vec3 & p){
-  std::default_random_engine generator;
-  std::uniform_real_distribution<double> distribution(0.0, 1.0);
-
   double x1 = distribution(generator);
   double x2 = distribution(generator);
 
