@@ -151,7 +151,14 @@ bool ray_color(
 			bool reflect_ray_intersection;
 
 			for(int i = 0; i < glossy_rays; i++) {
-				perturb(normal, normal2, perturbed_normal);
+				double x1 = distribution(generator);
+				double x2 = distribution(generator);
+
+				double alpha = glm::acos(sqrt(1 - x1));
+				double beta = 2 * M_PI * x2;
+
+				perturbed_normal = glm::normalize(glm::vec3(glm::rotate(float(beta), normal) * glm::rotate(float(alpha), normal2) * glm::vec4(normal, 0)));
+//				perturb(normal, normal2, perturbed_normal);
 				reflected = reflect(ray_direction, perturbed_normal);
 				reflect_ray_intersection = false;
 				color_part = glm::vec3(0.0f);
