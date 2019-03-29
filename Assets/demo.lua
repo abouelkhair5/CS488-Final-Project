@@ -21,7 +21,7 @@ scene:add_child(right_wall)
 right_wall:set_material(mat_red)
 right_wall:scale(30, 30, 30)
 right_wall:rotate('Z', -90)
-right_wall:translate({100, 0, 0})
+right_wall:translate(100, 0, 0)
 
 -- the left wall
 left_wall = gr.mesh( 'left_wall', 'plane.obj' )
@@ -29,7 +29,7 @@ scene:add_child(left_wall)
 left_wall:set_material(mat_green)
 left_wall:scale(30, 30, 30)
 left_wall:rotate('Z', 90)
-left_wall:translate({-100, 0, 0})
+left_wall:translate(-100, 0, 0)
 
 -- the back wall
 back_wall = gr.mesh( 'back_wall', 'plane.obj' )
@@ -37,7 +37,7 @@ scene:add_child(back_wall)
 back_wall:set_material(mat_white)
 back_wall:scale(30, 30, 30)
 back_wall:rotate('X', -90)
-back_wall:translate({0, 0, -100})
+back_wall:translate(0, 0, -100)
 
 gr.render(scene, 'demo.png', 512, 512,
         {0, 0, 100}, {0, 0, -100}, {0, 1, 0}, 50,
