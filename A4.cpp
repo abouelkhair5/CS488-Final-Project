@@ -345,10 +345,6 @@ void set_pixel(
 	glm::vec3 col;
 	ray_color(root, eye, ray_direction, ambient, lights, col, 4);
 	color = col;
-	pixels_done++;
-#ifdef SHOW_PROGRESS
-	std::cout << "\r" << ((pixels_done / total_pixels) * 100) << "% done";
-#endif
 }
 
 void set_segment(
@@ -376,6 +372,10 @@ void set_segment(
 			);
 		}
 	}
+  pixels_done += (h * w);
+#ifdef SHOW_PROGRESS
+  std::cout << "\r" << ((float(pixels_done) / total_pixels) * 100) << "% done";
+#endif
 }
 
 void A4_Render(
