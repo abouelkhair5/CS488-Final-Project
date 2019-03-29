@@ -87,7 +87,7 @@ bool Mesh::intersect(
 	t = 0;
 	bool intersection = false;
 	for(Triangle tri: m_faces){
-		glm::vec3 p0 = m_vertices[tri.v1];
+		/*glm::vec3 p0 = m_vertices[tri.v1];
 		glm::vec3 p1 = m_vertices[tri.v2] - p0;
 		glm::vec3 p2 = m_vertices[tri.v3] - p0;
 		glm::vec3 R = eye - p0;
@@ -111,6 +111,30 @@ bool Mesh::intersect(
 			intersection = true;
 			t = current_t;
 			normal = glm::normalize(glm::cross(p1, p2));
+		}*/
+
+		glm::vec3 e1 = m_vertices[tri.v1] - m_vertices[tri.v2];
+		glm::vec3 e2 = m_vertices[tri.v1] - m_vertices[tri.v3];
+		glm::vec3 n = glm::normalize(glm::cross(e1, e2));
+
+		glm::vec3 p0 = eye - m_vertices[tri.v1];
+		double current_t = glm::dot(n, p0) / glm::dot(n, direction);
+
+		if(current_t > std::max(EPSILON, t)){
+			glm::vec3 poi = eye + float(t) * direction;
+
+			glm::vec3 d1 = m_vertices[tri.v1] - poi;
+			glm::vec3 d2 = m_vertices[tri.v2] - poi;
+			glm::vec3 d3 = m_vertices[tri.v3] - poi;
+
+			double a1 = glm::acos(glm::dot(d1, d2));
+			double a2 = glm::acos(glm::dot(d2, d3));
+			double a3 = glm::acos(glm::dot(d3, d1));
+
+			if(abs(a1 + a2 + a3 - (2 * M_PI)) < EPSILON){
+				t = current_t;
+				normal = n;
+			}
 		}
 	}
 	return intersection;
