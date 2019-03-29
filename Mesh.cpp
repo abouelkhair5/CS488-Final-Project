@@ -87,32 +87,6 @@ bool Mesh::intersect(
 	t = 0;
 	bool intersection = false;
 	for(Triangle tri: m_faces){
-		/*glm::vec3 p0 = m_vertices[tri.v1];
-		glm::vec3 p1 = m_vertices[tri.v2] - p0;
-		glm::vec3 p2 = m_vertices[tri.v3] - p0;
-		glm::vec3 R = eye - p0;
-
-		glm::mat3 D = glm::mat3(p1, p2, -direction);
-		glm::mat3 D1 = glm::mat3(R, p2, -direction);
-		glm::mat3 D2 = glm::mat3(p1, R, -direction);
-		glm::mat3 D3 = glm::mat3(p1, p2, R);
-
-		double beta = glm::determinant(D1) / glm::determinant(D);
-		double gamma = glm::determinant(D2) / glm::determinant(D);
-		double current_t = glm::determinant(D3) / glm::determinant(D);
-
-		if(
-			beta > 0.0 && gamma > 0.0 &&
-			beta + gamma <= 1.0 &&
-			current_t > EPSILON &&
-			(!intersection || current_t < t)
-		){
-			// std::cout << current_t << std::endl;
-			intersection = true;
-			t = current_t;
-			normal = glm::normalize(glm::cross(p1, p2));
-		}*/
-
 		glm::vec3 e1 = m_vertices[tri.v1] - m_vertices[tri.v2];
 		glm::vec3 e2 = m_vertices[tri.v1] - m_vertices[tri.v3];
 		glm::vec3 n = glm::normalize(glm::cross(e1, e2));
