@@ -5,8 +5,8 @@
 -- and lights have been modified accordingly.
 
 mat1 = gr.material({0.7, 1.0, 0.7}, {0.5, 0.7, 0.5}, 25, false)
-mat2 = gr.material({0.5, 0.5, 0.5}, {0.5, 0.7, 0.5}, 25, false)
-mat3 = gr.trans_material({1.0, 0.6, 0.1}, {0.5, 0.7, 0.5}, {0.5, 0.7, 0.5}, 25, 1.33, false)
+mat2 = gr.material({0.5, 0.5, 0.5}, {0.5, 0.7, 0.5}, 25, true)
+mat3 = gr.material({0.7, 0.5, 0.7}, {1.0, 1.0, 1.0}, 25, false)
 mat4 = gr.material({0.7, 0.6, 1.0}, {0.5, 0.4, 0.8}, 25, false)
 
 scene = gr.node( 'scene' )
