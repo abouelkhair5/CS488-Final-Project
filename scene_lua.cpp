@@ -343,6 +343,34 @@ int gr_light_cmd(lua_State* L)
   return 1;
 }
 
+// Make an area light
+extern "C"
+int gr_area_light_cmd(lua_State* L)
+{
+  GRLUA_DEBUG_CALL;
+
+  gr_light_ud* data = (gr_light_ud*)lua_newuserdata(L, sizeof(gr_light_ud));
+  data->light = 0;
+
+
+  Light l;
+
+  double col[3];
+  get_tuple(L, 1, &l.position[0], 3);
+  get_tuple(L, 2, col, 3);
+  get_tuple(L, 3, l.falloff, 3);
+  l.size = luaL_checknumber(L, 4);
+
+  l.colour = glm::vec3(col[0], col[1], col[2]);
+
+  data->light = new Light(l);
+
+  luaL_newmetatable(L, "gr.light");
+  lua_setmetatable(L, -2);
+
+  return 1;
+}
+
 // Render a scene
 extern "C"
 int gr_render_cmd(lua_State* L)
@@ -599,6 +627,7 @@ static const luaL_Reg grlib_functions[] = {
   {"cone", gr_cone_cmd},
   {"mesh", gr_mesh_cmd},
   {"light", gr_light_cmd},
+  {"area_light", gr_area_light_cmd},
   {"render", gr_render_cmd},
   {0, 0}
 };
