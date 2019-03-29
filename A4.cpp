@@ -372,7 +372,7 @@ void set_segment(
 			);
 		}
 	}
-  pixels_done += (h * w);
+  pixels_done += ((xend - xstart) * (yend - ystart));
 #ifdef SHOW_PROGRESS
   std::cout << "\r" << ((float(pixels_done) / total_pixels) * 100) << "% done";
 #endif
@@ -475,9 +475,6 @@ void A4_Render(
 			if(my_threads[i][j].joinable()){
 				my_threads[i][j].join();
 			}
-      #ifdef SHOW_PROGRESS
-      std::cout << "\r" << (i * x_threads) + j << " Threads done";
-      #endif
     }
   }
 	std::cout << std::endl << "Scene was rendered using multi-threading" << std::endl;
