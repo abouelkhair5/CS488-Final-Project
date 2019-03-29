@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <math.h>
+#include <glm/ext.hpp>
 #include "Primitive.hpp"
 #include "polyroots.hpp"
 
