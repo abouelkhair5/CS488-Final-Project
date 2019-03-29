@@ -148,7 +148,7 @@ bool ray_color(
 				}
 			}
 
-    	col = float(1.0 / (light->size * light->size)) * total_color;
+    	col += float(1.0 / (light->size * light->size)) * total_color;
     }
 
 
