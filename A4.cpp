@@ -469,11 +469,11 @@ void A4_Render(
 			if(my_threads[i][j].joinable()){
 				my_threads[i][j].join();
 			}
-		}
-		#ifdef SHOW_PROGRESS
-			std::cout << "\r" << i * x_threads << " Threads done";
-		#endif
-	}
+      #ifdef SHOW_PROGRESS
+      std::cout << "\r" << (i * x_threads) + j << " Threads done";
+      #endif
+    }
+  }
 	std::cout << std::endl << "Scene was rendered using multi-threading" << std::endl;
 #endif
 #ifdef REFLECTION
