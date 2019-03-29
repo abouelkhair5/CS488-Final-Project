@@ -115,6 +115,8 @@ bool ray_color(
     for (Light *light: lights) {
     	glm::vec3 d1, d2;
     	find_normals(light->normal, d1, d2);
+    	d1 = float(light->size) * d1;
+			d2 = float(light->size) * d2;
     	for(int i = 0; i < 2; i++) {
 				for (int j = 0; j < 2; j++) {
 					glm::vec3 l = light->position + (float(i) * d1) + (float(j) * d2) - point_of_intersection;
