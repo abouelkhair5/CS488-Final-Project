@@ -118,7 +118,7 @@ bool Mesh::intersect(
 		glm::vec3 n = glm::normalize(glm::cross(e1, e2));
 
 		glm::vec3 p0 = eye - m_vertices[tri.v1];
-		double current_t = glm::dot(n, p0) / glm::dot(n, direction);
+		double current_t = (-1 * glm::dot(n, p0)) / glm::dot(n, direction);
 
 		if(current_t > std::max(EPSILON, t)){
 			glm::vec3 poi = eye + float(t) * direction;
