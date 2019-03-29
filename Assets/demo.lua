@@ -1,11 +1,11 @@
 -- Scene file to demonstrate the features implemented for ray tracer for CS488
 
-mat_white = gr.material({1.0, 1.0, 1.0}, {0, 0, 0}, 0)
-mat_green = gr.material({0.0, 1.0, 0.0}, {0, 0, 0}, 0)
-mat_blue  = gr.material({0.0, 0.0, 1.0}, {0, 0, 0}, 0)
-mat_red   = gr.material({1.0, 0.0, 0.0}, {0, 0, 0}, 0)
+mat_white = gr.material({1.0, 1.0, 1.0}, {0, 0, 0}, 0, false)
+mat_green = gr.material({0.0, 1.0, 0.0}, {0, 0, 0}, 0, false)
+mat_blue  = gr.material({0.0, 0.0, 1.0}, {0, 0, 0}, 0, false)
+mat_red   = gr.material({1.0, 0.0, 0.0}, {0, 0, 0}, 0, false)
 
-white_light = gr.light({0.0, 80.0, 10.0}, {0.9, 0.9, 0.9}, {1, 0, 0})
+white_light = gr.light({0.0, 80.0, 20.0}, {0.9, 0.9, 0.9}, {1, 0, 0})
 
 scene = gr.node('scene')
 
