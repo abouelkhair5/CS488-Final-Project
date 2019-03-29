@@ -179,7 +179,7 @@ bool ray_color(
           }
 
           if (intersected_rays > 0) {
-            reflected_color = float(1.0 / 2 * intersected_rays) * reflected_color;
+            reflected_color = float(1.0 / (2 * intersected_rays)) * reflected_color;
           }
         } else {
           ray_color(scene, point_of_intersection, reflected, ambient, lights,
