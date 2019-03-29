@@ -130,8 +130,9 @@ bool Mesh::intersect(
 			double a1 = glm::acos(glm::dot(d1, d2));
 			double a2 = glm::acos(glm::dot(d2, d3));
 			double a3 = glm::acos(glm::dot(d3, d1));
+			double angle_sum = (a1 + a2 + a3) * (180.0 / M_PI);
 
-			if(abs(a1 + a2 + a3 - (2 * M_PI)) < EPSILON){
+			if(angle_sum - 360.0) < EPSILON){
 				t = current_t;
 				normal = n;
 				intersection = true;
