@@ -13,8 +13,8 @@ Light::Light()
   falloff[0] = 1.0;
   falloff[1] = 0.0;
   falloff[2] = 0.0;
-  size = 0.0;
-  normal = glm::vec3(0, 1, 0);
+  size = 1;
+  separation = 1.0;
 }
 
 std::ostream& operator<<(std::ostream& out, const Light& l)

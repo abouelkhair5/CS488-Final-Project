@@ -113,13 +113,14 @@ bool ray_color(
 
     // loop over light sources to check for shadows
     for (Light *light: lights) {
+      glm::vec3 d = light->position - point_of_intersection;
     	glm::vec3 d1, d2, total_color;
-    	find_normals(light->normal, d1, d2);
-    	d1 = float(light->size) * d1;
-			d2 = float(light->size) * d2;
-    	for(int i = 0; i < 2; i++) {
-				for (int j = 0; j < 2; j++) {
-					glm::vec3 l = light->position + (float(i) * d1) + (float(j) * d2) - point_of_intersection;
+    	find_normals(d, d1, d2);
+    	d1 = float(light->separation) * d1;
+			d2 = float(light->separation) * d2;
+    	for(int i = 0; i < light->size; i++) {
+				for (int j = 0; j < light->size; j++) {
+					glm::vec3 l = d + (float(i) * d1) + (float(j) * d2);
 					double dist_to_light = glm::length(l);
 					double attenuation = light->falloff[0];
 					attenuation += (light->falloff[1] * dist_to_light);
@@ -147,7 +148,7 @@ bool ray_color(
 				}
 			}
 
-    	col = float(1.0 / 4.0) * total_color;
+    	col = float(1.0 / (light->size * light->size)) * total_color;
     }
 
 

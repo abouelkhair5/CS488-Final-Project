@@ -360,6 +360,7 @@ int gr_area_light_cmd(lua_State* L)
   get_tuple(L, 2, col, 3);
   get_tuple(L, 3, l.falloff, 3);
   l.size = luaL_checknumber(L, 4);
+  l.separation = luaL_checknumber(L, 5);
 
   l.colour = glm::vec3(col[0], col[1], col[2]);
 
