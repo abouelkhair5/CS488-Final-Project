@@ -67,6 +67,22 @@ void perturb(glm::vec3 &v, glm::vec3 &p){
 
 }
 
+void find_normals(glm::vec3 &v, glm::vec3 &n1, glm::vec3 &n2){
+	if(v.x == 0){
+		n1 = glm::vec3(1, 0, 0);
+	}
+	else if(v.y == 0){
+		n1 = glm::vec3(0, 1, 0);
+	}
+	else if(v.z == 0){
+		n1 = glm::vec3(0, 0, 1);
+	}
+	else{
+		n1 = glm::normalize(glm::vec3(0, 1, v.y/v.z));
+	}
+	n2 = glm::normalize(glm::cross(v, n1));
+}
+
 bool ray_color(
 	SceneNode* scene,
 	const glm::vec3 &eye,
@@ -97,31 +113,37 @@ bool ray_color(
 
     // loop over light sources to check for shadows
     for (Light *light: lights) {
-      glm::vec3 l = light->position - point_of_intersection;
-      double dist_to_light = glm::length(l);
-      double attenuation = light->falloff[0];
-      attenuation += (light->falloff[1] * dist_to_light);
-      attenuation += (light->falloff[2] * dist_to_light * dist_to_light);
-      glm::vec3 I_in = float(1 / attenuation) * light->colour;
-      l = glm::normalize(l);
+    	glm::vec3 d1, d2;
+    	find_normals(light->normal, d1, d2);
+    	for(int i = 0; i < 2; i++) {
+				for (int j = 0; j < 2; j++) {
+					glm::vec3 l = light->position + (float(i) * d1) + (float(j) * d2) - point_of_intersection;
+					double dist_to_light = glm::length(l);
+					double attenuation = light->falloff[0];
+					attenuation += (light->falloff[1] * dist_to_light);
+					attenuation += (light->falloff[2] * dist_to_light * dist_to_light);
+					glm::vec3 I_in = float(1 / attenuation) * light->colour;
+					l = glm::normalize(l);
 
-      // dummy values to pass to hit, however their values aren't needed
-      ray_intersection = false;
-      bool light_blocked = hit(scene, point_of_intersection, l, world_to_model, dummy_t, dummy_normal, dummy_mat, ray_intersection);
+					// dummy values to pass to hit, however their values aren't needed
+					ray_intersection = false;
+					bool light_blocked = hit(scene, point_of_intersection, l, world_to_model, dummy_t, dummy_normal, dummy_mat, ray_intersection);
 
-      if (!light_blocked) {
-        // shoot a ray from POI to light source, if that ray intersects with an object
-        // on the way then that light source is blocked and shadow will be casted
+					if (!light_blocked) {
+						// shoot a ray from POI to light source, if that ray intersects with an object
+						// on the way then that light source is blocked and shadow will be casted
 
-        glm::vec3 v = normalize(eye - point_of_intersection);
-        glm::vec3 r = glm::normalize(-l + (2 * glm::dot(l, normal)) * normal);
-        double l_dot_n = glm::dot(l, normal);
-        double r_dot_v_to_p = std::pow(glm::dot(r, v), mat.m_shininess);
+						glm::vec3 v = normalize(eye - point_of_intersection);
+						glm::vec3 r = glm::normalize(-l + (2 * glm::dot(l, normal)) * normal);
+						double l_dot_n = glm::dot(l, normal);
+						double r_dot_v_to_p = std::pow(glm::dot(r, v), mat.m_shininess);
 
-        col[0] += std::max(0.0, std::min(1.0, (mat.m_kd[0] * l_dot_n * I_in[0]) + (mat.m_ks[0] * r_dot_v_to_p * I_in[0])));
-        col[1] += std::max(0.0, std::min(1.0, (mat.m_kd[1] * l_dot_n * I_in[1]) + (mat.m_ks[1] * r_dot_v_to_p * I_in[1])));
-        col[2] += std::max(0.0, std::min(1.0, (mat.m_kd[2] * l_dot_n * I_in[2]) + (mat.m_ks[2] * r_dot_v_to_p * I_in[2])));
-      }
+						col[0] += std::max(0.0, std::min(1.0, (mat.m_kd[0] * l_dot_n * I_in[0]) + (mat.m_ks[0] * r_dot_v_to_p * I_in[0])));
+						col[1] += std::max(0.0, std::min(1.0, (mat.m_kd[1] * l_dot_n * I_in[1]) + (mat.m_ks[1] * r_dot_v_to_p * I_in[1])));
+						col[2] += std::max(0.0, std::min(1.0, (mat.m_kd[2] * l_dot_n * I_in[2]) + (mat.m_ks[2] * r_dot_v_to_p * I_in[2])));
+					}
+				}
+			}
     }
 
 
