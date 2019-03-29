@@ -14,6 +14,7 @@ struct Light {
   glm::vec3 position;
   double falloff[3];
   double size;
+  glm::vec3 normal;
 };
 
 std::ostream& operator<<(std::ostream& out, const Light& l);
