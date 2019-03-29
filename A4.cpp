@@ -18,6 +18,8 @@
 
 std::default_random_engine generator;
 std::uniform_real_distribution<double> distribution(0.0, 1.0);
+int pixels_done = 0;
+int total_pixels;
 
 glm::mat4 generate_dcs_to_world_mat(
 	uint width, uint height,
@@ -343,6 +345,10 @@ void set_pixel(
 	glm::vec3 col;
 	ray_color(root, eye, ray_direction, ambient, lights, col, 4);
 	color = col;
+	pixels_done++;
+#ifdef SHOW_PROGRESS
+	std::cout << "\r" << ((pixels_done / total_pixels) * 100) << "% done";
+#endif
 }
 
 void set_segment(
@@ -412,6 +418,7 @@ void A4_Render(
 
 	size_t h = image.height();
 	size_t w = image.width();
+	total_pixels = w * h;
 	int d = glm::length(view);
 
 	glm::mat4 dcs_to_world = generate_dcs_to_world_mat(w, h, d, fovy, eye, view, up);
@@ -457,9 +464,6 @@ void A4_Render(
 			);
 			#endif
 		}
-		#ifdef SHOW_PROGRESS
-		std::cout << "\r" << i * x_threads << " threads spun";
-		#endif
 	}
 #ifdef SHOW_PROGRESS
 	std::cout << std::endl << "All threads spinning" << std::endl;
