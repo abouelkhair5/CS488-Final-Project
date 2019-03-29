@@ -113,7 +113,7 @@ bool ray_color(
 
     // loop over light sources to check for shadows
     for (Light *light: lights) {
-    	glm::vec3 d1, d2;
+    	glm::vec3 d1, d2, total_color;
     	find_normals(light->normal, d1, d2);
     	d1 = float(light->size) * d1;
 			d2 = float(light->size) * d2;
@@ -140,12 +140,14 @@ bool ray_color(
 						double l_dot_n = glm::dot(l, normal);
 						double r_dot_v_to_p = std::pow(glm::dot(r, v), mat.m_shininess);
 
-						col[0] += std::max(0.0, std::min(1.0, (mat.m_kd[0] * l_dot_n * I_in[0]) + (mat.m_ks[0] * r_dot_v_to_p * I_in[0])));
-						col[1] += std::max(0.0, std::min(1.0, (mat.m_kd[1] * l_dot_n * I_in[1]) + (mat.m_ks[1] * r_dot_v_to_p * I_in[1])));
-						col[2] += std::max(0.0, std::min(1.0, (mat.m_kd[2] * l_dot_n * I_in[2]) + (mat.m_ks[2] * r_dot_v_to_p * I_in[2])));
+						total_color[0] += std::max(0.0, std::min(1.0, (mat.m_kd[0] * l_dot_n * I_in[0]) + (mat.m_ks[0] * r_dot_v_to_p * I_in[0])));
+						total_color[1] += std::max(0.0, std::min(1.0, (mat.m_kd[1] * l_dot_n * I_in[1]) + (mat.m_ks[1] * r_dot_v_to_p * I_in[1])));
+						total_color[2] += std::max(0.0, std::min(1.0, (mat.m_kd[2] * l_dot_n * I_in[2]) + (mat.m_ks[2] * r_dot_v_to_p * I_in[2])));
 					}
 				}
 			}
+
+    	col = float(1.0 / 4.0) * total_color;
     }
 
 
