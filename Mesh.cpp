@@ -73,14 +73,15 @@ bool Mesh::intersect(
 	const glm::vec3 eye,
 	const glm::vec3 direction,
 	double &t,
-	glm::vec3 &normal
+	glm::vec3 &normal,
+	glm::vec2 &uv
 ){
 	#ifdef RVOLUME_BOUNDS
 	NonhierBox b = NonhierBox(min_point, max_size);
-	return b.intersect(eye, direction, t, normal);
+	return b.intersect(eye, direction, t, normal, uv);
 	#elif defined VOLUME_BOUNDS
 	NonhierBox b = NonhierBox(min_point, max_size);
-	if(!b.intersect(eye, direction, t, normal)){
+	if(!b.intersect(eye, direction, t, normal, uv)){
 		return false;
 	}
 	#endif

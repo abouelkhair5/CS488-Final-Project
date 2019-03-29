@@ -9,7 +9,7 @@ Primitive::~Primitive()
 {
 }
 
-bool Primitive::intersect(const glm::vec3 ray_origin, const glm::vec3 ray_direction, double &t, glm::vec3 &normal)
+bool Primitive::intersect(const glm::vec3 ray_origin, const glm::vec3 ray_direction, double &t, glm::vec3 &normal, glm::vec2 &uv)
 {
 	return false;
 }
@@ -18,27 +18,27 @@ Sphere::~Sphere()
 {
 }
 
-bool Sphere::intersect(const glm::vec3 ray_origin, const glm::vec3 ray_direction, double &t, glm::vec3 &normal)
+bool Sphere::intersect(const glm::vec3 ray_origin, const glm::vec3 ray_direction, double &t, glm::vec3 &normal, glm::vec2 &uv)
 {
 	NonhierSphere s = NonhierSphere(glm::vec3(0.0, 0.0, 0.0), 1.0);
-	return s.intersect(ray_origin, ray_direction, t, normal);
+	return s.intersect(ray_origin, ray_direction, t, normal, uv);
 }
 
 Cube::~Cube()
 {
 }
 
-bool Cube::intersect(const glm::vec3 ray_origin, const glm::vec3 ray_direction, double &t, glm::vec3 &normal)
+bool Cube::intersect(const glm::vec3 ray_origin, const glm::vec3 ray_direction, double &t, glm::vec3 &normal, glm::vec2 &uv)
 {
 	NonhierBox b = NonhierBox(glm::vec3(0.0, 0.0, 0.0), 1.0);
-	return b.intersect(ray_origin, ray_direction, t, normal);
+	return b.intersect(ray_origin, ray_direction, t, normal, uv);
 }
 
 NonhierSphere::~NonhierSphere()
 {
 }
 
-bool NonhierSphere::intersect(const glm::vec3 ray_origin, const glm::vec3 ray_direction, double &t, glm::vec3 &normal)
+bool NonhierSphere::intersect(const glm::vec3 ray_origin, const glm::vec3 ray_direction, double &t, glm::vec3 &normal, glm::vec2 &uv)
 {
 	// std::cout << "intersect" <<std::endl;
 	double roots[2];
@@ -77,7 +77,7 @@ NonhierBox::~NonhierBox()
 {
 }
 
-bool NonhierBox::intersect(const glm::vec3 ray_origin, const glm::vec3 ray_direction, double &t, glm::vec3 &normal)
+bool NonhierBox::intersect(const glm::vec3 ray_origin, const glm::vec3 ray_direction, double &t, glm::vec3 &normal, glm::vec2 &uv)
 {
 
 	// we have an interval for each of the 3 coordinates for that coordinate
@@ -218,7 +218,7 @@ bool NonhierBox::intersect(const glm::vec3 ray_origin, const glm::vec3 ray_direc
 
 Cylinder::~Cylinder() = default;
 
-bool Cylinder::intersect(const glm::vec3 eye, const glm::vec3 direction, double &t, glm::vec3 &normal)
+bool Cylinder::intersect(const glm::vec3 eye, const glm::vec3 direction, double &t, glm::vec3 &normal, glm::vec2 &uv)
 {
 	double radius = 1.0;
 	double height = 1.0;
@@ -305,7 +305,7 @@ bool Cylinder::intersect(const glm::vec3 eye, const glm::vec3 direction, double 
 
 Cone::~Cone() = default;
 
-bool Cone::intersect(const glm::vec3 eye, const glm::vec3 direction, double &t, glm::vec3 &normal)
+bool Cone::intersect(const glm::vec3 eye, const glm::vec3 direction, double &t, glm::vec3 &normal, glm::vec2 &uv)
 {
 	glm::vec3 m_pos = glm::vec3(0.0);
 	double radius = 1.0;

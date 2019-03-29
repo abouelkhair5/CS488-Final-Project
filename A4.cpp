@@ -295,7 +295,8 @@ bool hit(
 		GeometryNode *gn = static_cast<GeometryNode*>(scene);
 		double t;
 		glm::vec3 normal;
-		bool intersection = gn->m_primitive->intersect(ray_origin_in_model, ray_direction_in_model, t, normal);
+		glm::vec2 uv;
+		bool intersection = gn->m_primitive->intersect(ray_origin_in_model, ray_direction_in_model, t, normal, uv);
 		if(intersection){
 			// std::cout << "GeometryChild" << std::endl;
 			// std::cout << child->m_name << std::endl;

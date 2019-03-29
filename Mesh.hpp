@@ -27,7 +27,7 @@ struct Triangle
 class Mesh : public Primitive {
 public:
   Mesh( const std::string& fname );
-  virtual bool intersect(const glm::vec3 eye, const glm::vec3 direction, double &t, glm::vec3 &normal);
+  virtual bool intersect(const glm::vec3 eye, const glm::vec3 direction, double &t, glm::vec3 &normal, glm::vec2 &uv);
   
 private:
 	glm::vec3 min_point;
