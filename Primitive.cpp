@@ -218,6 +218,20 @@ bool NonhierBox::intersect(const glm::vec3 ray_origin, const glm::vec3 ray_direc
 		normal = close_normal;
 	}
 
+	glm::vec3 poi = ray_origin + (float(t) * ray_direction) - m_pos;
+	if(normal.x != 0){
+	  uv.x = poi.z;
+	  uv.y = poi.y;
+	}
+	else if (normal.y != 0){
+	  uv.x = poi.x;
+	  uv.y = poi.z;
+	}
+	else if(normal.z != 0){
+    uv.x = poi.x;
+    uv.y = poi.y;
+	}
+
 	return true;
 }
 
