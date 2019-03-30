@@ -42,6 +42,28 @@ Image::Image(const Image & other)
 }
 
 //---------------------------------------------------------------------------------------
+Image::Image(const std::string & filename)
+{
+	std::vector<unsigned char> color_values;
+	unsigned width, height, error;
+	error = loadpng::decode(color_values, width, height, filename, LCT_RGB);
+
+	if(error){
+		std::cout << "decoder error " << error << ": " << lodepng_error_text(error) << std::endl;
+	}
+
+	m_height = height;
+	m_width = width;
+
+	size_t num_el = width * height * m_colorComponents;
+	m_data = new double[num_el];
+
+	for(int i = 0; i < num_el; i++){
+		m_data[i] = color_values[i] / 255.0;
+	}
+}
+
+//---------------------------------------------------------------------------------------
 Image::~Image()
 {
   delete [] m_data;

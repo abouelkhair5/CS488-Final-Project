@@ -25,6 +25,9 @@ public:
 	// Copy an image.
 	Image(const Image & other);
 
+	// Create an image and load it from a file
+	Image(const std::string & filename);
+
 	~Image();
 
 	// Copy the data from one image to another.
