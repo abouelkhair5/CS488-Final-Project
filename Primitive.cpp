@@ -316,6 +316,8 @@ bool Cylinder::intersect(const glm::vec3 eye, const glm::vec3 direction, double 
 	if(intersection){
 		t = current_t;
 		normal = current_normal;
+		uv.x = glm::angle(normal, glm::vec3(0, 0, 1)) / (2 * M_PI);
+		uv.y = float((height - ((eye.z + (t * direction.z)) - m_pos.z)) / height);
 		return true;
 	}
 
