@@ -46,7 +46,7 @@ Image::Image(const std::string & filename)
 {
 	std::vector<unsigned char> color_values;
 	unsigned width, height, error;
-	error = loadpng::decode(color_values, width, height, filename, LCT_RGB);
+	error = lodepng::decode(color_values, width, height, filename, LCT_RGB);
 
 	if(error){
 		std::cout << "decoder error " << error << ": " << lodepng_error_text(error) << std::endl;

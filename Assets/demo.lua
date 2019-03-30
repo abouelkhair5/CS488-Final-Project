@@ -4,8 +4,9 @@ mat_white = gr.material({1.0, 1.0, 1.0}, {0, 0, 0}, 0, false)
 mat_green = gr.material({0.0, 1.0, 0.0}, {0, 0, 0}, 0, false)
 mat_blue  = gr.material({0.0, 0.0, 1.0}, {0, 0, 0}, 0, false)
 mat_red   = gr.material({1.0, 0.0, 0.0}, {0, 0, 0}, 0, false)
+mirror   = gr.material({0.0, 0.0, 0.0}, {1.0, 1.0, 1.0}, 100, false)
 
-white_light = gr.light({0.0, 80.0, 20.0}, {0.9, 0.9, 0.9}, {1, 0, 0})
+white_light = gr.area_light({0.0, 80.0, 20.0}, {0.9, 0.9, 0.9}, {1, 0, 0}, 4, 1)
 
 scene = gr.node('scene')
 
