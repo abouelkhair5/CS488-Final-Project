@@ -9,8 +9,8 @@ Texture::Texture(const std::string &filename) {
 }
 
 void Texture::getColor(float &u, float &v, glm::vec3 color) {
-  double di = (m_image.width() - 1) * u;
-  double dj = (m_image.height() - 1) * v;
+  double di = float(m_image.width() - 1) * u;
+  double dj = float(m_image.height() - 1) * v;
 
   uint i = uint(di);
   uint j = uint(dj);
