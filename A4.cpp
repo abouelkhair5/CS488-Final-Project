@@ -84,7 +84,7 @@ void perturb(glm::vec3 &v, const float &du, const float &dv){
 	glm::vec3 pu = glm::vec3(-sin(theta), 0, cos(theta));
 	glm::vec3 pv = glm::cross(v, pu);
 
-	v = glm::normalize(v + ((du * pu) - (dv * pv)));
+	v = v + (((du * pu) - (dv * pv)) / glm::dot(v, v));
 }
 
 void find_normals(glm::vec3 &v, glm::vec3 &n1, glm::vec3 &n2){
