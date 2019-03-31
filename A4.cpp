@@ -338,6 +338,17 @@ bool hit(
 					mat.m_transparent = false;
 					mat.m_glossy = false;
 					mat.m_ior = 0;
+				}else if(auto *bump_map = dynamic_cast<BumpMap *>(gn->m_material)) {
+					glm::vec2 derivatives;
+					bump_map->get_derivatives(uv.x, uv.y, derivatives);
+					perturb(normal, derivatives.x, derivatives.y);
+					mat.m_kd = glm::vec3(1.0);
+					mat.m_ks = glm::vec3(0.0);
+					mat.m_kt = glm::vec3(0.0);
+					mat.m_shininess = 0;
+					mat.m_transparent = false;
+					mat.m_glossy = false;
+					mat.m_ior = 0;
 				}
 			}
 			//set pixel to color of object
