@@ -661,7 +661,7 @@ static const luaL_Reg grlib_functions[] = {
   {"material", gr_material_cmd},
   {"trans_material", gr_transparent_material_cmd},
   {"texture", gr_texture_cmd},
-  {"bump_map", gr_bump_map_cmd}
+  {"bump_map", gr_bump_map_cmd},
   // New for assignment 4
   {"cube", gr_cube_cmd},
   {"nh_sphere", gr_nh_sphere_cmd},
