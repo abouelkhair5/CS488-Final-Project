@@ -4,6 +4,7 @@
 
 #include "A4.hpp"
 #include "PhongMaterial.hpp"
+#include "Texture.hpp"
 #include <cmath>
 #include <thread>
 #include <list>
@@ -312,6 +313,15 @@ bool hit(
 					mat.m_transparent = phong_mat->m_transparent;
 					mat.m_glossy = phong_mat->m_glossy;
 					mat.m_ior = phong_mat->m_ior;
+				}
+				else if(auto *texture = dynamic_cast<Texture *>(gn->m_material)){
+					texture->getColor(uv.x, uv.y, mat.m_kd);
+					mat.m_ks = glm::vec3(0.0);
+					mat.m_kt = glm::vec3(0.0);
+					mat.m_shininess = 0;
+					mat.m_transparent = false;
+					mat.m_glossy = false;
+					mat.m_ior = 0;
 				}
 			}
 			//set pixel to color of object
