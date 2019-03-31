@@ -292,7 +292,7 @@ bool hit(
 	// decide the color of the pixel
 	// get ray color generated from eye going through pixel
 	if(scene->m_nodeType == NodeType::GeometryNode){
-		GeometryNode *gn = static_cast<GeometryNode*>(scene);
+		auto *gn = dynamic_cast<GeometryNode*>(scene);
 		double t;
 		glm::vec3 normal;
 		glm::vec2 uv;
@@ -304,14 +304,15 @@ bool hit(
 				ray_intersection = true;
 				ray_closest_t = t;
 				intersection_normal = glm::normalize(glm::vec3(glm::transpose(world_to_new_model) * glm::vec4(normal, 0.0)));
-				PhongMaterial* phong_mat = static_cast<PhongMaterial *>(gn->m_material);
-				mat.m_kd = phong_mat->m_kd;
-				mat.m_ks = phong_mat->m_ks;
-				mat.m_kt = phong_mat->m_kt;
-				mat.m_shininess = phong_mat->m_shininess;
-				mat.m_transparent = phong_mat->m_transparent;
-				mat.m_glossy = phong_mat->m_glossy;
-				mat.m_ior = phong_mat->m_ior;
+				if(auto* phong_mat = dynamic_cast<PhongMaterial *>(gn->m_material)){
+					mat.m_kd = phong_mat->m_kd;
+					mat.m_ks = phong_mat->m_ks;
+					mat.m_kt = phong_mat->m_kt;
+					mat.m_shininess = phong_mat->m_shininess;
+					mat.m_transparent = phong_mat->m_transparent;
+					mat.m_glossy = phong_mat->m_glossy;
+					mat.m_ior = phong_mat->m_ior;
+				}
 			}
 			//set pixel to color of object
 		}
