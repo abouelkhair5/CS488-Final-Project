@@ -44,10 +44,16 @@ back_wall:translate(0, 0, -30)
 
 -- the object (sphere)
 ball = gr.sphere('b')
-scene:add_child(ball)
+ scene:add_child(ball)
 ball:set_material(wallpaper)
-ball:scale(10, 10, 10)
+ball:scale(7, 7, 7)
+ball:translate(-13, -23, -23);
 
+box = gr.cube('x')
+scene:add_child(box)
+box:scale(10, 10, 10)
+box:set_material(wallpaper)
+box:translate(8, -5, -20)
 gr.render(scene, 'demo.png', 1024, 1024,
         {0, 10, 65}, {0, -15, -60}, {0, 1, 0}, 50,
         {0.4, 0.4, 0.4}, {white_light})
