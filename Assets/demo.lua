@@ -48,6 +48,6 @@ scene:add_child(ball)
 ball:set_material(wallpaper)
 ball:scale(10, 10, 10)
 
-gr.render(scene, 'demo.png', 512, 512,
+gr.render(scene, 'demo.png', 1024, 1024,
         {0, 10, 65}, {0, -15, -60}, {0, 1, 0}, 50,
         {0.4, 0.4, 0.4}, {white_light})
