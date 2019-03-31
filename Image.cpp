@@ -143,7 +143,7 @@ double & Image::operator()(uint x, uint y, uint i)
 }
 
 //---------------------------------------------------------------------------------------
-void Image::getColor(float &u, float &v, glm::vec3 &color) {
+void Image::getColor(const float &u, const float &v, glm::vec3 &color) {
   double di = float(width() - 1) * u;
   double dj = float(height() - 1) * v;
 

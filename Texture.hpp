@@ -9,7 +9,7 @@
 class Texture : public Material{
 public:
     Texture(const std::string &filename);
-    void getColor(float &u, float &v, glm::vec3 &color);
+    void getColor(const float &u, const float &v, glm::vec3 &color);
 
     Image *m_image;
 };
