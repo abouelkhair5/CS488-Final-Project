@@ -5,6 +5,7 @@ mat_green = gr.material({0.0, 1.0, 0.0}, {0, 0, 0}, 0, false)
 mat_blue  = gr.material({0.0, 0.0, 1.0}, {0, 0, 0}, 0, false)
 mat_red   = gr.material({1.0, 0.0, 0.0}, {0, 0, 0}, 0, false)
 mirror   = gr.material({0.0, 0.0, 0.0}, {1.0, 1.0, 1.0}, 100, false)
+wallpaper = gr.texture("nonhier.png")
 
 white_light = gr.area_light({0.0, 80.0, 20.0}, {0.9, 0.9, 0.9}, {1, 0, 0}, 4, 1)
 
@@ -44,7 +45,7 @@ back_wall:translate(0, 0, -30)
 -- the object (sphere)
 ball = gr.sphere('b')
 scene:add_child(ball)
-ball:set_material(mat_blue)
+ball:set_material(wallpaper)
 ball:scale(10, 10, 10)
 
 gr.render(scene, 'demo.png', 512, 512,
