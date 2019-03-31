@@ -1,7 +1,7 @@
 #include "BumpMap.h"
 
 BumpMap::BumpMap(const std::string &filename) {
-  m_image = new Image(filename);
+  m_image = new Image(filename, RESOLUTION, RESOLUTION);
 }
 
 void BumpMap::get_derivatives(const float &u, const float &v, glm::vec2 &derivatives) {

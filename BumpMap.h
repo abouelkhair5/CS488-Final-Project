@@ -6,6 +6,8 @@
 #include "Material.hpp"
 #include "Image.hpp"
 
+#define RESOLUTION 2048
+
 class BumpMap : public Material{
 public:
     BumpMap(const std::string &filename);
