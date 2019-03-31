@@ -7,6 +7,7 @@
 #include "Image.hpp"
 
 #define RESOLUTION 2048
+#define DELTA 0.05f
 
 class BumpMap : public Material{
 public:
