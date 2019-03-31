@@ -70,9 +70,9 @@ bool NonhierSphere::intersect(const glm::vec3 ray_origin, const glm::vec3 ray_di
 	glm::vec3 point_of_intersection = ray_origin + (float)t * ray_direction;
 	normal = glm::normalize(point_of_intersection - m_pos);
 	double theta = glm::atan(-(point_of_intersection.z - m_pos.z), point_of_intersection.x - m_pos.x);
-	double phi = glm::acos(-(point_of_intersection.y - m_pos.y)/ float(m_radius));
+	double phi = glm::acos(-(point_of_intersection.y - m_pos.y) / float(m_radius));
 	uv.x = (theta + M_PI) / (2 * M_PI);
-  uv.y = phi / M_PI;
+  uv.y = (M_PI - phi) / M_PI;
 
 	return true;
 
