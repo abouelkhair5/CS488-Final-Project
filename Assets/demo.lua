@@ -9,6 +9,7 @@ wallpaper = gr.texture("world.png")
 bumps     = gr.bump_map("bump_map.png")
 
 white_light = gr.area_light({0.0, 80.0, 20.0}, {0.9, 0.9, 0.9}, {1, 0, 0}, 4, 1)
+point_light = gr.light({-10.0, 80.0, 20.0}, {0.9, 0.9, 0.9}, {1, 0, 0})
 
 scene = gr.node('scene')
 
@@ -45,8 +46,8 @@ back_wall:translate(0, 0, -30)
 
 -- the object (sphere)
 ball = gr.sphere('b')
- scene:add_child(ball)
-ball:set_material(wallpaper)
+scene:add_child(ball)
+ball:set_material(bumps)
 ball:scale(7, 7, 7)
 ball:translate(-13, -23, -23);
 
