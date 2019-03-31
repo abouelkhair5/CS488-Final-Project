@@ -12,6 +12,7 @@
 #include <chrono>
 #include <ctime>
 #include <random>
+#include <iomanip>
 
 #define MULTI_THREAD
 #define REFLECTION
@@ -410,11 +411,11 @@ void set_segment(
 			lights
 			);
 		}
-	}
 #ifdef SHOW_PROGRESS
-  pixels_done += ((xend - xstart) * (yend - ystart));
-  std::cout << "\r" << ((float(pixels_done) / total_pixels) * 100) << "% done";
+		pixels_done += ((xend - xstart);
+		std::cout << "\r" << std::fixed << std::setprecision(2) << ((float(pixels_done) / total_pixels) * 100) << "% done";
 #endif
+	}
 }
 
 void A4_Render(
