@@ -82,7 +82,7 @@ Image::Image(const std::string & filename, uint width, uint height)
 
 	for(uint y = 0; y < m_height; y++){
 		for(uint x = 0; x < m_width; x++){
-			for(uint i = 0; i < m_colorComponents){
+			for(uint i = 0; i < m_colorComponents; i++){
 				uint iy = y % image_height;
 				uint ix = x % image_width;
 				uint idx = ((y * m_width + x) * m_colorComponents) + i;
