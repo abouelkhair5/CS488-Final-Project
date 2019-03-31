@@ -80,12 +80,16 @@ Image::Image(const std::string & filename, uint width, uint height)
 	size_t num_el = width * height * m_colorComponents;
 	m_data = new double[num_el];
 
-	for(int i = 0; i < num_el; i++){
-		uint p = i % m_colorComponents;
-		uint x = (i / m_colorComponents) % image_width;
-		uint y = (i / (m_colorComponents * image_width)) % image_height;
-		uint image_i = ((image_width * y + x) * m_colorComponents) + p;
-		m_data[i] = double(color_values[image_i]) / 255.0;
+	for(uint y = 0; y < m_height; y++){
+		for(uint x = 0; x < m_width; x++){
+			for(uint i = 0; i < m_colorComponents){
+				uint iy = y % image_height;
+				uint ix = x % image_width;
+				uint idx = ((y * m_width + x) * m_colorComponents) + i;
+				uint iidx = ((iy * image_width + ix) * m_colorComponents) + i;
+				m_data[idx] = color_values[iidx];
+			}
+		}
 	}
 }
 
