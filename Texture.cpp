@@ -18,10 +18,10 @@ void Texture::getColor(float &u, float &v, glm::vec3 color) {
   double up = di - i;
   double vp = dj - j;
 
-  glm::vec3 c00 = glm::vec3(m_image(i, j, 0), m_image(i, j, 2), m_image(i, j, 2));
-  glm::vec3 c01 = glm::vec3(m_image(i, j + 1, 0), m_image(i, j + 1, 2), m_image(i, j + 1, 2));
-  glm::vec3 c10 = glm::vec3(m_image(i + 1, j, 0), m_image(i + 1, j, 2), m_image(i + 1, j, 2));
-  glm::vec3 c11 = glm::vec3(m_image(i + 1, j + 1, 0), m_image(i + 1, j + 1, 2), m_image(i + 1, j + 1, 2));
+  glm::vec3 c00 = glm::vec3(m_image(i, j, 0), m_image(i, j, 1), m_image(i, j, 2));
+  glm::vec3 c01 = glm::vec3(m_image(i, j + 1, 0), m_image(i, j + 1, 1), m_image(i, j + 1, 2));
+  glm::vec3 c10 = glm::vec3(m_image(i + 1, j, 0), m_image(i + 1, j, 1), m_image(i + 1, j, 2));
+  glm::vec3 c11 = glm::vec3(m_image(i + 1, j + 1, 0), m_image(i + 1, j + 1, 1), m_image(i + 1, j + 1, 2));
 
   color = float(1 - up) * float(1 - vp) * c00 +
           float(1 - up) * float(vp) * c01 +
