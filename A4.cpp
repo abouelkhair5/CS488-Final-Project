@@ -5,6 +5,7 @@
 #include "A4.hpp"
 #include "PhongMaterial.hpp"
 #include "Texture.hpp"
+#include "BumpMap.h"
 #include <cmath>
 #include <thread>
 #include <list>
@@ -68,6 +69,21 @@ void perturb(glm::vec3 &v, glm::vec3 &p){
 
 	p = glm::normalize(glm::vec3(R2 * R1 * glm::vec4(v, 0.0)));
 
+}
+
+void perturb(glm::vec3 &v, const float &du, const float &dv){
+	float theta;
+	if (v.x == 0 && v.z == 0){
+		theta = M_PI / 2;
+	}
+	else{
+		theta = glm::atan(-v.z, v.x);
+	}
+
+	glm::vec3 pu = glm::vec3(-sin(theta), 0, cos(theta));
+	glm::vec3 pv = glm::cross(v, pu);
+
+	v = glm::normalize(v + ((du * pu) - (dv * pv)));
 }
 
 void find_normals(glm::vec3 &v, glm::vec3 &n1, glm::vec3 &n2){

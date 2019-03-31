@@ -30,7 +30,13 @@ void A4_Render(
 
 void perturb(
 		glm::vec3 &v,
-		glm::vec3 & p
+		glm::vec3 &p
+);
+
+void perturb(
+		glm::vec3 &v,
+		const float &du,
+		const float &dv
 );
 
 glm::mat4 generate_dcs_to_world_mat(
