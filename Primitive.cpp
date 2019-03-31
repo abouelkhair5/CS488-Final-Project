@@ -151,12 +151,12 @@ bool NonhierBox::intersect(const glm::vec3 ray_origin, const glm::vec3 ray_direc
 	// ie we pick the intersection between both intervals because
 	// that's the real interval including our t
 
-	if(lower_t < lower_ty){
+	if(std::isnan(lower_t) || lower_t < lower_ty){
 		lower_t = lower_ty;
 		close_normal = close_normal_y;
 	}
 
-	if(upper_ty < upper_t){
+	if(std::isnan(upper_t) || upper_ty < upper_t){
 		upper_t = upper_ty;
 		far_normal = far_normal_y;
 	}
@@ -183,12 +183,12 @@ bool NonhierBox::intersect(const glm::vec3 ray_origin, const glm::vec3 ray_direc
 
 	// there's overlap so we pick the intersection
 	// and the normal to the face corresponding to the bounds of that intersection
-	if(lower_t < lower_tz){
+	if(std::isnan(lower_t) || lower_t < lower_tz){
 		lower_t = lower_tz;
-		close_normal = close_normal_y;
+		close_normal = close_normal_z;
 	}
 
-	if(upper_tz < upper_t){
+	if(std::isnan(upper_t) || upper_tz < upper_t){
 		upper_t = upper_tz;
 		far_normal = far_normal_z;
 	}
