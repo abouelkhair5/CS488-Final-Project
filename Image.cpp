@@ -143,6 +143,28 @@ double & Image::operator()(uint x, uint y, uint i)
 }
 
 //---------------------------------------------------------------------------------------
+void Image::getColor(float &u, float &v, glm::vec3 &color) {
+  double di = float(width() - 1) * u;
+  double dj = float(height() - 1) * v;
+
+  int i = int(di);
+  int j = int(dj);
+
+  double up = di - i;
+  double vp = dj - j;
+
+  glm::vec3 c00 = glm::vec3((*this)(i, j, 0), (*this)(i, j, 1), (*this)(i, j, 2));
+  glm::vec3 c01 = glm::vec3((*this)(i, j + 1, 0), (*this)(i, j + 1, 1), (*this)(i, j + 1, 2));
+  glm::vec3 c10 = glm::vec3((*this)(i + 1, j, 0), (*this)(i + 1, j, 1), (*this)(i + 1, j, 2));
+  glm::vec3 c11 = glm::vec3((*this)(i + 1, j + 1, 0), (*this)(i + 1, j + 1, 1), (*this)(i + 1, j + 1, 2));
+
+  color = float(1 - up) * float(1 - vp) * c00 +
+          float(1 - up) * float(vp) * c01 +
+          float(up) * float(1 - vp) * c10 +
+          float(up) * float(vp) * c11;
+}
+
+//---------------------------------------------------------------------------------------
 static double clamp(double x, double a, double b)
 {
 	return x < a ? a : (x > b ? b : x);

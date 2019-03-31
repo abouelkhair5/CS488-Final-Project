@@ -3,6 +3,7 @@
 #pragma once
 
 #include <string>
+#include "glm/glm.hpp"
 
 typedef unsigned int uint;
 
@@ -47,6 +48,8 @@ public:
 
 	// Retrieve a particular component from the image.
 	double & operator()(uint x, uint y, uint i);
+
+  void getColor(float &u, float &v, glm::vec3 &color);
 
 	// Save this image into the PNG file with name 'filename'.
 	// Warning: If 'filename' already exists, it will be overwritten.
