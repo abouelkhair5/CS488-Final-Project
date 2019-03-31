@@ -59,7 +59,7 @@ Image::Image(const std::string & filename)
 	m_data = new double[num_el];
 
 	for(int i = 0; i < num_el; i++){
-		m_data[i] = color_values[i] / 255.0;
+		m_data[i] = double(color_values[i]) / 255.0;
 	}
 }
 

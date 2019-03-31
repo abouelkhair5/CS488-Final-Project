@@ -71,7 +71,7 @@ bool NonhierSphere::intersect(const glm::vec3 ray_origin, const glm::vec3 ray_di
 	normal = glm::normalize(point_of_intersection - m_pos);
 	glm::vec3 front = glm::vec3(0, 0, 1);
   glm::vec3 up = glm::vec3(0, 1, 0);
-	uv.x = glm::angle(normal, front) / (2 * M_PI);
+	uv.x = glm::angle(normal, front) / (M_PI);
   uv.y = glm::angle(normal, up) / (M_PI);
 
 	return true;
