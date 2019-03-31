@@ -5,7 +5,7 @@
 #include "A4.hpp"
 #include "PhongMaterial.hpp"
 #include "Texture.hpp"
-#include "BumpMap.h"
+#include "BumpMap.hpp"
 #include <cmath>
 #include <thread>
 #include <list>

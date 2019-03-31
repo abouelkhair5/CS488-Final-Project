@@ -57,7 +57,7 @@
 #include "PhongMaterial.hpp"
 #include "A4.hpp"
 #include "Texture.hpp"
-#include "BumpMap.h"
+#include "BumpMap.hpp"
 
 typedef std::map<std::string,Mesh*> MeshMap;
 static MeshMap mesh_map;

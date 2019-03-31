@@ -1,4 +1,4 @@
-#include "BumpMap.h"
+#include "BumpMap.hpp"
 
 BumpMap::BumpMap(const std::string &filename) {
   m_image = new Image(filename, RESOLUTION, RESOLUTION);
