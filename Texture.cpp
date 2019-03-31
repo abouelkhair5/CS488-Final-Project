@@ -8,7 +8,7 @@ Texture::Texture(const std::string &filename) {
   m_image = Image(filename);
 }
 
-void Texture::getColor(float &u, float &v, glm::vec3 color) {
+void Texture::getColor(float &u, float &v, glm::vec3 &color) {
   double di = float(m_image.width() - 1) * u;
   double dj = float(m_image.height() - 1) * v;
 
