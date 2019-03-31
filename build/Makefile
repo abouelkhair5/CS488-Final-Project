@@ -64,6 +64,7 @@ ifeq ($(config),release)
 endif
 
 OBJECTS := \
+    $(OBJDIR)/Texture.o \
 	$(OBJDIR)/PhongMaterial.o \
 	$(OBJDIR)/polyroots.o \
 	$(OBJDIR)/A4.o \
