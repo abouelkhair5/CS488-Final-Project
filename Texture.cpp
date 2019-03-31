@@ -4,7 +4,7 @@
 
 #include "Texture.hpp"
 
-Texture::Texture(std::string &filename) {
+Texture::Texture(const std::string &filename) {
   m_image = Image(filename);
 }
 
