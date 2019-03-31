@@ -412,7 +412,7 @@ void set_segment(
 			);
 		}
 #ifdef SHOW_PROGRESS
-		pixels_done += ((xend - xstart);
+		pixels_done += (xend - xstart);
 		std::cout << "\r" << std::fixed << std::setprecision(2) << ((float(pixels_done) / total_pixels) * 100) << "% done";
 #endif
 	}
