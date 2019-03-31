@@ -6,7 +6,7 @@ mat_blue  = gr.material({0.0, 0.0, 1.0}, {0, 0, 0}, 0, false)
 mat_red   = gr.material({1.0, 0.0, 0.0}, {0, 0, 0}, 0, false)
 mirror    = gr.material({0.0, 0.0, 0.0}, {1.0, 1.0, 1.0}, 100, false)
 wallpaper = gr.texture("world.png")
-bumps     = gr.bump_map("bump_map.png")
+bumps     = gr.bump_map("bump_map.png", {1.0, 1.0, 1.0}, {0.5, 0.5, 0.5}, 25)
 
 white_light = gr.area_light({0.0, 80.0, 20.0}, {0.9, 0.9, 0.9}, {1, 0, 0}, 4, 1)
 

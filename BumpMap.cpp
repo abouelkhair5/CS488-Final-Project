@@ -1,6 +1,7 @@
 #include "BumpMap.hpp"
 
-BumpMap::BumpMap(const std::string &filename) {
+BumpMap::BumpMap(const std::string &filename, const glm::vec3& kd, const glm::vec3 &ks, double shininess)
+:m_kd(kd), m_ks(ks), m_shininess(shininess){
   m_image = new Image(filename, RESOLUTION, RESOLUTION);
 }
 

@@ -341,10 +341,10 @@ bool hit(
 					glm::vec2 derivatives;
 					bump_map->get_derivatives(uv.x, uv.y, derivatives);
 					perturb(normal, derivatives.x, derivatives.y);
-					mat.m_kd = glm::vec3(1.0);
-					mat.m_ks = glm::vec3(0.0);
+					mat.m_kd = bump_map->m_kd;
+					mat.m_ks = bump_map->m_ks;
 					mat.m_kt = glm::vec3(0.0);
-					mat.m_shininess = 0;
+					mat.m_shininess = bump_map->m_shininess;
 					mat.m_transparent = false;
 					mat.m_glossy = false;
 					mat.m_ior = 0;

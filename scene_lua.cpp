@@ -508,7 +508,16 @@ int gr_bump_map_cmd(lua_State* L)
 
   const std::string file_name = std::string(luaL_checkstring(L, 1));
 
-  data->material = new BumpMap(file_name);
+  double kd[3], ks[3];
+  get_tuple(L, 2, kd, 3);
+  get_tuple(L, 3, ks, 3);
+
+  double shininess = luaL_checknumber(L, 4);
+
+  data->material = new BumpMap(file_name,
+                               glm::vec3(kd[0], kd[1], kd[2]),
+                               glm::vec3(ks[0], ks[1], ks[2]),
+                               shininess);
 
   luaL_newmetatable(L, "gr.material");
   lua_setmetatable(L, -2);
