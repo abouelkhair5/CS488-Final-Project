@@ -64,6 +64,32 @@ Image::Image(const std::string & filename)
 }
 
 //---------------------------------------------------------------------------------------
+Image::Image(const std::string & filename, uint width, uint height)
+{
+	std::vector<unsigned char> color_values;
+	unsigned image_width, image_height, error;
+	error = lodepng::decode(color_values, image_width, image_height, filename, LCT_RGB);
+
+	if(error){
+		std::cout << "decoder error " << error << ": " << lodepng_error_text(error) << std::endl;
+	}
+
+	m_height = height;
+	m_width = width;
+
+	size_t num_el = width * height * m_colorComponents;
+	m_data = new double[num_el];
+
+	for(int i = 0; i < num_el; i++){
+		uint p = i % m_colorComponents;
+		uint x = (i / m_colorComponents) % image_width;
+		uint y = (i / (m_colorComponents * image_width)) % image_height;
+		uint image_i = ((image_width * y + x) * m_colorComponents) + p;
+		m_data[i] = double(color_values[image_i]) / 255.0;
+	}
+}
+
+//---------------------------------------------------------------------------------------
 Image::~Image()
 {
   delete [] m_data;

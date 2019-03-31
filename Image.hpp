@@ -28,6 +28,9 @@ public:
 	// Create an image and load it from a file
 	Image(const std::string & filename);
 
+  // Create an image with width and height and file it with image from file
+  Image(const std::string & filename, uint width, uint height);
+
 	~Image();
 
 	// Copy the data from one image to another.
