@@ -320,7 +320,6 @@ bool hit(
 			if(!ray_intersection or t < ray_closest_t){
 				ray_intersection = true;
 				ray_closest_t = t;
-				intersection_normal = glm::normalize(glm::vec3(glm::transpose(world_to_new_model) * glm::vec4(normal, 0.0)));
 				if(auto* phong_mat = dynamic_cast<PhongMaterial *>(gn->m_material)){
 					mat.m_kd = phong_mat->m_kd;
 					mat.m_ks = phong_mat->m_ks;
@@ -350,6 +349,7 @@ bool hit(
 					mat.m_glossy = false;
 					mat.m_ior = 0;
 				}
+				intersection_normal = glm::normalize(glm::vec3(glm::transpose(world_to_new_model) * glm::vec4(normal, 0.0)));
 			}
 			//set pixel to color of object
 		}
