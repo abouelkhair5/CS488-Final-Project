@@ -7,7 +7,8 @@
 class Wood : public RandomTexture{
 public:
   Wood(glm::vec3 color, double grain);
-  void getColor(glm::vec2 &uv, glm::vec3 &color);
+  void getColor(glm::vec2 &uv, glm::vec3 &color) override;
+  void getColor(glm::vec3 &p, glm::vec3 &color) override;
 };
 
 

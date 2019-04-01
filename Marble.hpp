@@ -7,7 +7,7 @@
 class Marble : public RandomTexture{
 public:
     Marble(glm::vec3 color, double freq, unsigned int octaves, double gain);
-    void getColor(glm::vec2 &uv, glm::vec3 &color);
+    void getColor(glm::vec3 &p, glm::vec3 &color) override;
 private:
     unsigned int m_octaves;
     double m_gain;

@@ -12,6 +12,7 @@ public:
   RandomTexture(glm::vec3 col, double freq);
   virtual void getIntensity(glm::vec2 &uv, float &i);
   virtual void getColor(glm::vec2 &uv, glm::vec3 &color);
+  virtual void getColor(glm::vec3 &p, glm::vec3 &color);
 
 protected:
   PerlinNoise *pn;

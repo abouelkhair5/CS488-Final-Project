@@ -7,8 +7,8 @@
 Marble::Marble(glm::vec3 color, double freq, unsigned int octaves, double gain):
 RandomTexture(color, freq), m_octaves(octaves), m_gain(gain) {}
 
-void Marble::getColor(glm::vec2 &uv, glm::vec3 &color) {
-  auto turbulence = float(pn->turbulence(uv.x, uv.y, 0.6, m_octaves, m_freq, m_gain));
-  float intensity = sin(float(m_freq * (uv.x + m_gain * turbulence)));
+void Marble::getColor(glm::vec3 &p, glm::vec3 &color) {
+  auto turbulence = float(pn->turbulence(p.x, p.y, p.z, m_octaves, m_freq, m_gain));
+  float intensity = sin(float(m_gain * (p.x + m_octaves * turbulence)));
   color = intensity * m_col;
 }

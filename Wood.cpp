@@ -11,3 +11,10 @@ void Wood::getColor(glm::vec2 &uv, glm::vec3 &color) {
   intensity = intensity - floor(intensity);
   color = intensity * m_col;
 }
+
+void Wood::getColor(glm::vec3 &p, glm::vec3 &color) {
+  glm::vec3 p_normalized = glm::normalize(p);
+  auto intensity = float(m_freq * pn->noise(p_normalized.x, p_normalized.y, p_normalized.z));
+  intensity = intensity - floor(intensity);
+  color = intensity * m_col;
+}
