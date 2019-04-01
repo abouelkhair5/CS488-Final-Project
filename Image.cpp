@@ -87,7 +87,7 @@ Image::Image(const std::string & filename, uint width, uint height)
 				uint ix = x % image_width;
 				uint idx = ((y * m_width + x) * m_colorComponents) + i;
 				uint iidx = ((iy * image_width + ix) * m_colorComponents) + i;
-				m_data[idx] = double(color_values[iidx]) / 255.0: ;
+				m_data[idx] = double(color_values[iidx]) / 255.0;
 			}
 		}
 	}
