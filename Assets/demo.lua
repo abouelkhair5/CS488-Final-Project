@@ -7,6 +7,8 @@ mat_red   = gr.material({1.0, 0.0, 0.0}, {0, 0, 0}, 0, false)
 mirror    = gr.material({0.0, 0.0, 0.0}, {1.0, 1.0, 1.0}, 100, false)
 wallpaper = gr.texture("world.png")
 bumps     = gr.bump_map("bump_map.png", {1.0, 1.0, 1.0}, {0.5, 0.5, 0.5}, 25)
+perlin    = gr.random_texture({1.0, 1.0, 1.0}, 5)
+wood      = gr.wood({0.65, 0.4, 0.01}, 50)
 
 white_light = gr.area_light({0.0, 80.0, 20.0}, {0.9, 0.9, 0.9}, {1, 0, 0}, 4, 1)
 point_light = gr.light({-10.0, 80.0, 20.0}, {0.9, 0.9, 0.9}, {1, 0, 0})
@@ -16,7 +18,7 @@ scene = gr.node('scene')
 -- the floor
 floor = gr.mesh( 'floor', 'plane.obj' )
 scene:add_child(floor)
-floor:set_material(mat_white)
+floor:set_material(perlin)
 floor:scale(30, 30, 30)
 floor:translate(0, -30, 0)
 
