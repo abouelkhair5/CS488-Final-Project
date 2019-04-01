@@ -82,6 +82,7 @@ OBJECTS := \
 	$(OBJDIR)/PerlinNoise.o \
 	$(OBJDIR)/RandomTexture.o \
 	$(OBJDIR)/Wood.o \
+	$(OBJDIR)/Marble.o \
 
 RESOURCES := \
 
@@ -194,6 +195,9 @@ $(OBJDIR)/RandomTexture.o: ../RandomTexture.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/Wood.o: ../Wood.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/Marble.o: ../Marble.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
