@@ -58,6 +58,7 @@
 #include "A4.hpp"
 #include "Texture.hpp"
 #include "BumpMap.hpp"
+#include "RandomTexture.hpp"
 
 typedef std::map<std::string,Mesh*> MeshMap;
 static MeshMap mesh_map;
@@ -497,6 +498,24 @@ int gr_texture_cmd(lua_State* L)
   return 1;
 }
 
+
+// Create a Random Texture
+extern "C"
+int gr_random_texture_cmd(lua_State* L)
+{
+  GRLUA_DEBUG_CALL;
+
+  gr_material_ud* data = (gr_material_ud*)lua_newuserdata(L, sizeof(gr_material_ud));
+  data->material = 0;
+
+  data->material = new RandomTexture();
+
+  luaL_newmetatable(L, "gr.material");
+  lua_setmetatable(L, -2);
+
+  return 1;
+}
+
 // Create a bump map
 extern "C"
 int gr_bump_map_cmd(lua_State* L)
@@ -670,6 +689,7 @@ static const luaL_Reg grlib_functions[] = {
   {"material", gr_material_cmd},
   {"trans_material", gr_transparent_material_cmd},
   {"texture", gr_texture_cmd},
+  {"random_texture", gr_random_texture_cmd},
   {"bump_map", gr_bump_map_cmd},
   // New for assignment 4
   {"cube", gr_cube_cmd},
