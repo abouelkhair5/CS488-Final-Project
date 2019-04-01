@@ -79,6 +79,7 @@ OBJECTS := \
 	$(OBJDIR)/scene_lua.o \
 	$(OBJDIR)/Texture.o \
 	$(OBJDIR)/BumpMap.o \
+	$(OBJDIR)/PerlinNoise.o \
 
 RESOURCES := \
 
@@ -182,6 +183,9 @@ $(OBJDIR)/Texture.o: ../Texture.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/BumpMap.o: ../BumpMap.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/PerlinNoise.o: ../PerlinNoise.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
