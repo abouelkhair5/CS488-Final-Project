@@ -9,9 +9,13 @@
 class RandomTexture : public Material{
 public:
   RandomTexture();
-  void getIntensity(glm::vec2 &uv, float &i);
+  RandomTexture(glm::vec3 col, double freq);
+  virtual void getIntensity(glm::vec2 &uv, float &i);
+  virtual void getColor(glm::vec2 &uv, glm::vec3 &color);
 private:
   PerlinNoise *pn;
+  glm::vec3 m_col;
+  double m_freq;
 };
 
 

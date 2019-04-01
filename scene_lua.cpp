@@ -508,6 +508,11 @@ int gr_random_texture_cmd(lua_State* L)
   gr_material_ud* data = (gr_material_ud*)lua_newuserdata(L, sizeof(gr_material_ud));
   data->material = 0;
 
+  double kd[3];
+  get_tuple(L, 1, kd, 3);
+
+  double freq = luaL_checknumber(L, 2);
+
   data->material = new RandomTexture();
 
   luaL_newmetatable(L, "gr.material");
