@@ -81,6 +81,7 @@ OBJECTS := \
 	$(OBJDIR)/BumpMap.o \
 	$(OBJDIR)/PerlinNoise.o \
 	$(OBJDIR)/RandomTexture.o \
+	$(OBJDIR)/Wood.o \
 
 RESOURCES := \
 
@@ -190,6 +191,9 @@ $(OBJDIR)/PerlinNoise.o: ../PerlinNoise.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/RandomTexture.o: ../RandomTexture.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/Wood.o: ../Wood.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
