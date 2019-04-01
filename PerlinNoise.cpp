@@ -57,6 +57,20 @@ double PerlinNoise::noise(double x, double y, double z) {
   return (res + 1.0) / 2.0;
 }
 
+double PerlinNoise::turbulence(double x, double y, double z, int octaves, double frequency, double amp) {
+  double total_turbulence = 0.0f;
+  double scale = 1;
+  double total_amp = 1;
+
+  for(int i = 0; i < octaves; i++){
+    total_turbulence += total_amp * noise(scale * x, scale * y, scale * z);
+    scale *= frequency;
+    total_amp *= amp;
+  }
+
+  return fabs(total_turbulence);
+}
+
 double PerlinNoise::fade(double t) {
   // Using the fading equation provided in the improved Perlin paper
   return t * t * t * (t * (t * 6 - 15) + 10);
