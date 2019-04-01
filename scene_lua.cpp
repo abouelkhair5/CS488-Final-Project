@@ -59,6 +59,7 @@
 #include "Texture.hpp"
 #include "BumpMap.hpp"
 #include "RandomTexture.hpp"
+#include "Wood.hpp"
 
 typedef std::map<std::string,Mesh*> MeshMap;
 static MeshMap mesh_map;
@@ -513,7 +514,29 @@ int gr_random_texture_cmd(lua_State* L)
 
   double freq = luaL_checknumber(L, 2);
 
-  data->material = new RandomTexture();
+  data->material = new RandomTexture(glm::vec3(kd[0], kd[1], kd[2]), freq);
+
+  luaL_newmetatable(L, "gr.material");
+  lua_setmetatable(L, -2);
+
+  return 1;
+}
+
+// Create a Random Texture
+extern "C"
+int gr_wood_cmd(lua_State* L)
+{
+  GRLUA_DEBUG_CALL;
+
+  gr_material_ud* data = (gr_material_ud*)lua_newuserdata(L, sizeof(gr_material_ud));
+  data->material = 0;
+
+  double kd[3];
+  get_tuple(L, 1, kd, 3);
+
+  double freq = luaL_checknumber(L, 2);
+
+  data->material = new Wood(glm::vec3(kd[0], kd[1], kd[2]), freq);
 
   luaL_newmetatable(L, "gr.material");
   lua_setmetatable(L, -2);
@@ -695,6 +718,7 @@ static const luaL_Reg grlib_functions[] = {
   {"trans_material", gr_transparent_material_cmd},
   {"texture", gr_texture_cmd},
   {"random_texture", gr_random_texture_cmd},
+  {"wood", gr_wood_cmd},
   {"bump_map", gr_bump_map_cmd},
   // New for assignment 4
   {"cube", gr_cube_cmd},

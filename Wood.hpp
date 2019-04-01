@@ -5,7 +5,9 @@
 #include "RandomTexture.hpp"
 
 class Wood : public RandomTexture{
-
+public:
+  Wood(glm::vec3 color, double grain);
+  void getColor(glm::vec2 &uv, glm::vec3 &color);
 };
 
 
