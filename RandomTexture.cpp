@@ -22,3 +22,7 @@ void RandomTexture::getColor(glm::vec3 &p, glm::vec3 &color) {
   double n = pn->noise(m_freq *  p_normalize.x, m_freq * p_normalize.y, m_freq * p_normalize.z);
   color = float(n) * m_col;
 }
+
+void RandomTexture::getColor(glm::vec3 &p, glm::vec2 &uv, glm::vec3 &color){
+  getColor(uv, color);
+}

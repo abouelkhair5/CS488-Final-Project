@@ -18,3 +18,7 @@ void Wood::getColor(glm::vec3 &p, glm::vec3 &color) {
   intensity = intensity - floor(intensity);
   color = intensity * m_col;
 }
+
+void Wood::getColor(glm::vec3 &p, glm::vec2 &uv, glm::vec3 &color){
+  getColor(uv, color);
+}

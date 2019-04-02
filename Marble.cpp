@@ -12,3 +12,7 @@ void Marble::getColor(glm::vec3 &p, glm::vec3 &color) {
   float intensity = sin(float(m_gain * (p.x + m_octaves * turbulence)));
   color = intensity * m_col;
 }
+
+void Marble::getColor(glm::vec3 &p, glm::vec2 &uv, glm::vec3 &color) {
+  getColor(p, color);
+}
