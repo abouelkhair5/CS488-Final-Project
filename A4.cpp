@@ -354,7 +354,7 @@ bool hit(
 				}
 				else if(auto *random_texture = dynamic_cast<RandomTexture *>(gn->m_material)) {
 				  glm::vec3 poi = ray_origin + float(t) * ray_direction;
-					random_texture->getColor(poi, mat.m_kd);
+					random_texture->getColor(poi, uv, mat.m_kd);
 					mat.m_ks = glm::vec3(0.0);
 					mat.m_kt = glm::vec3(0.0);
 					mat.m_shininess = 0;
