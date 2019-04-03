@@ -12,20 +12,20 @@
 class Primitive {
 public:
   virtual ~Primitive();
-  virtual bool intersect(const glm::vec3 eye, const glm::vec3 direction, double &t, glm::vec3 &normal);
+  virtual bool intersect(const glm::vec3 eye, const glm::vec3 direction, double &t, glm::vec3 &normal, glm::vec2 &uv);
 
   // static constexpr float EPSILON = 0.05;
 };
 
 class Sphere : public Primitive {
 public:
-  virtual bool intersect(const glm::vec3 eye, const glm::vec3 direction, double &t, glm::vec3 &normal);
+  virtual bool intersect(const glm::vec3 eye, const glm::vec3 direction, double &t, glm::vec3 &normal, glm::vec2 &uv);
   virtual ~Sphere();
 };
 
 class Cube : public Primitive {
 public:
-  virtual bool intersect(const glm::vec3 eye, const glm::vec3 direction, double &t, glm::vec3 &normal);
+  virtual bool intersect(const glm::vec3 eye, const glm::vec3 direction, double &t, glm::vec3 &normal, glm::vec2 &uv);
   virtual ~Cube();
 };
 
@@ -35,7 +35,7 @@ public:
     : m_pos(pos), m_radius(radius)
   {
   }
-  virtual bool intersect(const glm::vec3 eye, const glm::vec3 direction, double &t, glm::vec3 &normal);
+  virtual bool intersect(const glm::vec3 eye, const glm::vec3 direction, double &t, glm::vec3 &normal, glm::vec2 &uv);
   virtual ~NonhierSphere();
 
 private:
@@ -49,7 +49,7 @@ public:
     : m_pos(pos), m_size(size)
   {
   }
-  virtual bool intersect(const glm::vec3 eye, const glm::vec3 direction, double &t, glm::vec3 &normal);
+  virtual bool intersect(const glm::vec3 eye, const glm::vec3 direction, double &t, glm::vec3 &normal, glm::vec2 &uv);
   virtual ~NonhierBox();
 
 private:
@@ -59,7 +59,7 @@ private:
 
 class Cylinder : public Primitive {
 public:
-    virtual bool intersect(const glm::vec3 eye, const glm::vec3 direction, double &t, glm::vec3 &normal);
+    virtual bool intersect(const glm::vec3 eye, const glm::vec3 direction, double &t, glm::vec3 &normal, glm::vec2 &uv);
     virtual ~Cylinder();
 
 };
@@ -69,6 +69,6 @@ public:
     Cone()
     {
     }
-    virtual bool intersect(const glm::vec3 eye, const glm::vec3 direction, double &t, glm::vec3 &normal);
+    virtual bool intersect(const glm::vec3 eye, const glm::vec3 direction, double &t, glm::vec3 &normal, glm::vec2 &uv);
     virtual ~Cone();
 };

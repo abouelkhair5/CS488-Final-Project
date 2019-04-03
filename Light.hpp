@@ -13,6 +13,8 @@ struct Light {
   glm::vec3 colour;
   glm::vec3 position;
   double falloff[3];
+  int size;
+  double separation;
 };
 
 std::ostream& operator<<(std::ostream& out, const Light& l);

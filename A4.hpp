@@ -8,6 +8,7 @@
 #include "GeometryNode.hpp"
 #include "Light.hpp"
 #include "Image.hpp"
+#include "PhongMaterial.hpp"
 
 void A4_Render(
 		// What to render
@@ -27,6 +28,17 @@ void A4_Render(
 		const std::list<Light *> & lights
 );
 
+void perturb(
+		glm::vec3 &v,
+		glm::vec3 &p
+);
+
+void perturb(
+		glm::vec3 &v,
+		const float &du,
+		const float &dv
+);
+
 glm::mat4 generate_dcs_to_world_mat(
 		uint width, uint height,
 		int d, double fov,
@@ -42,11 +54,7 @@ bool hit(
 	const glm::mat4 &world_to_model,
 	double &ray_closest_t,
 	glm::vec3 &intersection_normal,
-	glm::vec3 &kd,
-	glm::vec3 &ks,
-	double &shininess,
-	bool &transparency,
-	double &ior,
+	PhongMaterial &mat,
 	bool& ray_intersection
 );
 

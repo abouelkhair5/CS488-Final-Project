@@ -42,6 +42,58 @@ Image::Image(const Image & other)
 }
 
 //---------------------------------------------------------------------------------------
+Image::Image(const std::string & filename)
+{
+	std::vector<unsigned char> color_values;
+	unsigned width, height, error;
+	error = lodepng::decode(color_values, width, height, filename, LCT_RGB);
+
+	if(error){
+		std::cout << "decoder error " << error << ": " << lodepng_error_text(error) << std::endl;
+	}
+
+	m_height = height;
+	m_width = width;
+
+	size_t num_el = width * height * m_colorComponents;
+	m_data = new double[num_el];
+
+	for(int i = 0; i < num_el; i++){
+		m_data[i] = double(color_values[i]) / 255.0;
+	}
+}
+
+//---------------------------------------------------------------------------------------
+Image::Image(const std::string & filename, uint width, uint height)
+{
+	std::vector<unsigned char> color_values;
+	unsigned image_width, image_height, error;
+	error = lodepng::decode(color_values, image_width, image_height, filename, LCT_RGB);
+
+	if(error){
+		std::cout << "decoder error " << error << ": " << lodepng_error_text(error) << std::endl;
+	}
+
+	m_height = height;
+	m_width = width;
+
+	size_t num_el = width * height * m_colorComponents;
+	m_data = new double[num_el];
+
+	for(uint y = 0; y < m_height; y++){
+		for(uint x = 0; x < m_width; x++){
+			for(uint i = 0; i < m_colorComponents; i++){
+				uint iy = y % image_height;
+				uint ix = x % image_width;
+				uint idx = ((y * m_width + x) * m_colorComponents) + i;
+				uint iidx = ((iy * image_width + ix) * m_colorComponents) + i;
+				m_data[idx] = double(color_values[iidx]) / 255.0;
+			}
+		}
+	}
+}
+
+//---------------------------------------------------------------------------------------
 Image::~Image()
 {
   delete [] m_data;
@@ -88,6 +140,28 @@ double Image::operator()(uint x, uint y, uint i) const
 double & Image::operator()(uint x, uint y, uint i)
 {
   return m_data[m_colorComponents * (m_width * y + x) + i];
+}
+
+//---------------------------------------------------------------------------------------
+void Image::getColor(const float &u, const float &v, glm::vec3 &color) {
+  double di = float(width() - 1) * u;
+  double dj = float(height() - 1) * v;
+
+  int i = int(di);
+  int j = int(dj);
+
+  double up = di - i;
+  double vp = dj - j;
+
+  glm::vec3 c00 = glm::vec3((*this)(i, j, 0), (*this)(i, j, 1), (*this)(i, j, 2));
+  glm::vec3 c01 = glm::vec3((*this)(i, j + 1, 0), (*this)(i, j + 1, 1), (*this)(i, j + 1, 2));
+  glm::vec3 c10 = glm::vec3((*this)(i + 1, j, 0), (*this)(i + 1, j, 1), (*this)(i + 1, j, 2));
+  glm::vec3 c11 = glm::vec3((*this)(i + 1, j + 1, 0), (*this)(i + 1, j + 1, 1), (*this)(i + 1, j + 1, 2));
+
+  color = float(1 - up) * float(1 - vp) * c00 +
+          float(1 - up) * float(vp) * c01 +
+          float(up) * float(1 - vp) * c10 +
+          float(up) * float(vp) * c11;
 }
 
 //---------------------------------------------------------------------------------------

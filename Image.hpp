@@ -3,6 +3,7 @@
 #pragma once
 
 #include <string>
+#include "glm/glm.hpp"
 
 typedef unsigned int uint;
 
@@ -25,6 +26,12 @@ public:
 	// Copy an image.
 	Image(const Image & other);
 
+	// Create an image and load it from a file
+	Image(const std::string & filename);
+
+  // Create an image with width and height and file it with image from file
+  Image(const std::string & filename, uint width, uint height);
+
 	~Image();
 
 	// Copy the data from one image to another.
@@ -41,6 +48,8 @@ public:
 
 	// Retrieve a particular component from the image.
 	double & operator()(uint x, uint y, uint i);
+
+  void getColor(const float &u, const float &v, glm::vec3 &color);
 
 	// Save this image into the PNG file with name 'filename'.
 	// Warning: If 'filename' already exists, it will be overwritten.

@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <math.h>
+#include <glm/ext.hpp>
 #include "Primitive.hpp"
 #include "polyroots.hpp"
 
@@ -9,7 +10,7 @@ Primitive::~Primitive()
 {
 }
 
-bool Primitive::intersect(const glm::vec3 ray_origin, const glm::vec3 ray_direction, double &t, glm::vec3 &normal)
+bool Primitive::intersect(const glm::vec3 ray_origin, const glm::vec3 ray_direction, double &t, glm::vec3 &normal, glm::vec2 &uv)
 {
 	return false;
 }
@@ -18,27 +19,27 @@ Sphere::~Sphere()
 {
 }
 
-bool Sphere::intersect(const glm::vec3 ray_origin, const glm::vec3 ray_direction, double &t, glm::vec3 &normal)
+bool Sphere::intersect(const glm::vec3 ray_origin, const glm::vec3 ray_direction, double &t, glm::vec3 &normal, glm::vec2 &uv)
 {
 	NonhierSphere s = NonhierSphere(glm::vec3(0.0, 0.0, 0.0), 1.0);
-	return s.intersect(ray_origin, ray_direction, t, normal);
+	return s.intersect(ray_origin, ray_direction, t, normal, uv);
 }
 
 Cube::~Cube()
 {
 }
 
-bool Cube::intersect(const glm::vec3 ray_origin, const glm::vec3 ray_direction, double &t, glm::vec3 &normal)
+bool Cube::intersect(const glm::vec3 ray_origin, const glm::vec3 ray_direction, double &t, glm::vec3 &normal, glm::vec2 &uv)
 {
 	NonhierBox b = NonhierBox(glm::vec3(0.0, 0.0, 0.0), 1.0);
-	return b.intersect(ray_origin, ray_direction, t, normal);
+	return b.intersect(ray_origin, ray_direction, t, normal, uv);
 }
 
 NonhierSphere::~NonhierSphere()
 {
 }
 
-bool NonhierSphere::intersect(const glm::vec3 ray_origin, const glm::vec3 ray_direction, double &t, glm::vec3 &normal)
+bool NonhierSphere::intersect(const glm::vec3 ray_origin, const glm::vec3 ray_direction, double &t, glm::vec3 &normal, glm::vec2 &uv)
 {
 	// std::cout << "intersect" <<std::endl;
 	double roots[2];
@@ -68,6 +69,10 @@ bool NonhierSphere::intersect(const glm::vec3 ray_origin, const glm::vec3 ray_di
 
 	glm::vec3 point_of_intersection = ray_origin + (float)t * ray_direction;
 	normal = glm::normalize(point_of_intersection - m_pos);
+	double theta = glm::atan(-(normal.z), normal.x);
+	double phi = glm::acos(-(normal.y) / float(m_radius));
+	uv.x = float((theta + M_PI) / (2 * M_PI));
+  uv.y = float((M_PI - phi) / M_PI);
 
 	return true;
 
@@ -77,7 +82,7 @@ NonhierBox::~NonhierBox()
 {
 }
 
-bool NonhierBox::intersect(const glm::vec3 ray_origin, const glm::vec3 ray_direction, double &t, glm::vec3 &normal)
+bool NonhierBox::intersect(const glm::vec3 ray_origin, const glm::vec3 ray_direction, double &t, glm::vec3 &normal, glm::vec2 &uv)
 {
 
 	// we have an interval for each of the 3 coordinates for that coordinate
@@ -146,12 +151,12 @@ bool NonhierBox::intersect(const glm::vec3 ray_origin, const glm::vec3 ray_direc
 	// ie we pick the intersection between both intervals because
 	// that's the real interval including our t
 
-	if(lower_t < lower_ty){
+	if(std::isnan(lower_t) || lower_t < lower_ty){
 		lower_t = lower_ty;
 		close_normal = close_normal_y;
 	}
 
-	if(upper_ty < upper_t){
+	if(std::isnan(upper_t) || upper_ty < upper_t){
 		upper_t = upper_ty;
 		far_normal = far_normal_y;
 	}
@@ -178,12 +183,12 @@ bool NonhierBox::intersect(const glm::vec3 ray_origin, const glm::vec3 ray_direc
 
 	// there's overlap so we pick the intersection
 	// and the normal to the face corresponding to the bounds of that intersection
-	if(lower_t < lower_tz){
+	if(std::isnan(lower_t) || lower_t < lower_tz){
 		lower_t = lower_tz;
-		close_normal = close_normal_y;
+		close_normal = close_normal_z;
 	}
 
-	if(upper_tz < upper_t){
+	if(std::isnan(upper_t) || upper_tz < upper_t){
 		upper_t = upper_tz;
 		far_normal = far_normal_z;
 	}
@@ -213,12 +218,23 @@ bool NonhierBox::intersect(const glm::vec3 ray_origin, const glm::vec3 ray_direc
 		normal = close_normal;
 	}
 
+	glm::vec3 poi = float(1.0 / m_size) * (ray_origin + (float(t) * ray_direction) - m_pos);
+    //std::cout << poi.x << " " << poi.y << " " << poi.z << std::endl;
+	if (normal.z != 0.0){
+	  uv = glm::vec2(poi.x, 1 - poi.y);
+	}else if(normal.x != 0.0){
+	  uv = glm::vec2(poi.z, 1 - poi.y);
+	}
+    else if (normal.y != 0.0){
+	  uv = glm::vec2(poi.x, poi.z);
+	}
+
 	return true;
 }
 
 Cylinder::~Cylinder() = default;
 
-bool Cylinder::intersect(const glm::vec3 eye, const glm::vec3 direction, double &t, glm::vec3 &normal)
+bool Cylinder::intersect(const glm::vec3 eye, const glm::vec3 direction, double &t, glm::vec3 &normal, glm::vec2 &uv)
 {
 	double radius = 1.0;
 	double height = 1.0;
@@ -297,6 +313,8 @@ bool Cylinder::intersect(const glm::vec3 eye, const glm::vec3 direction, double 
 	if(intersection){
 		t = current_t;
 		normal = current_normal;
+		uv.x = glm::angle(normal, glm::vec3(0, 0, 1)) / (2 * M_PI);
+		uv.y = float((height - ((eye.z + (t * direction.z)) - m_pos.z)) / height);
 		return true;
 	}
 
@@ -305,7 +323,7 @@ bool Cylinder::intersect(const glm::vec3 eye, const glm::vec3 direction, double 
 
 Cone::~Cone() = default;
 
-bool Cone::intersect(const glm::vec3 eye, const glm::vec3 direction, double &t, glm::vec3 &normal)
+bool Cone::intersect(const glm::vec3 eye, const glm::vec3 direction, double &t, glm::vec3 &normal, glm::vec2 &uv)
 {
 	glm::vec3 m_pos = glm::vec3(0.0);
 	double radius = 1.0;

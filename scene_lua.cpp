@@ -56,6 +56,11 @@
 #include "Material.hpp"
 #include "PhongMaterial.hpp"
 #include "A4.hpp"
+#include "Texture.hpp"
+#include "BumpMap.hpp"
+#include "RandomTexture.hpp"
+#include "Wood.hpp"
+#include "Marble.hpp"
 
 typedef std::map<std::string,Mesh*> MeshMap;
 static MeshMap mesh_map;
@@ -343,6 +348,35 @@ int gr_light_cmd(lua_State* L)
   return 1;
 }
 
+// Make an area light
+extern "C"
+int gr_area_light_cmd(lua_State* L)
+{
+  GRLUA_DEBUG_CALL;
+
+  gr_light_ud* data = (gr_light_ud*)lua_newuserdata(L, sizeof(gr_light_ud));
+  data->light = 0;
+
+
+  Light l;
+
+  double col[3];
+  get_tuple(L, 1, &l.position[0], 3);
+  get_tuple(L, 2, col, 3);
+  get_tuple(L, 3, l.falloff, 3);
+  l.size = luaL_checknumber(L, 4);
+  l.separation = luaL_checknumber(L, 5);
+
+  l.colour = glm::vec3(col[0], col[1], col[2]);
+
+  data->light = new Light(l);
+
+  luaL_newmetatable(L, "gr.light");
+  lua_setmetatable(L, -2);
+
+  return 1;
+}
+
 // Render a scene
 extern "C"
 int gr_render_cmd(lua_State* L)
@@ -405,10 +439,11 @@ int gr_material_cmd(lua_State* L)
   get_tuple(L, 2, ks, 3);
 
   double shininess = luaL_checknumber(L, 3);
+  bool glossy = lua_toboolean(L, 4);
   
   data->material = new PhongMaterial(glm::vec3(kd[0], kd[1], kd[2]),
                                      glm::vec3(ks[0], ks[1], ks[2]),
-                                     shininess);
+                                     shininess, glossy);
 
   luaL_newmetatable(L, "gr.material");
   lua_setmetatable(L, -2);
@@ -425,17 +460,136 @@ int gr_transparent_material_cmd(lua_State* L)
   gr_material_ud* data = (gr_material_ud*)lua_newuserdata(L, sizeof(gr_material_ud));
   data->material = 0;
 
-  double kd[3], ks[3];
+  double kd[3], ks[3], kt[3];
   get_tuple(L, 1, kd, 3);
   get_tuple(L, 2, ks, 3);
+  get_tuple(L, 3, kt, 3);
 
-  double shininess = luaL_checknumber(L, 3);
-  double ior = luaL_checknumber(L, 4);
+  double shininess = luaL_checknumber(L, 4);
+  double ior = luaL_checknumber(L, 5);
+  bool glossy = lua_toboolean(L, 6);
 
   data->material = new PhongMaterial(glm::vec3(kd[0], kd[1], kd[2]),
                                      glm::vec3(ks[0], ks[1], ks[2]),
+                                     glm::vec3(kt[0], kt[1], kt[2]),
                                      shininess,
-                                     ior);
+                                     ior, glossy);
+
+  luaL_newmetatable(L, "gr.material");
+  lua_setmetatable(L, -2);
+
+  return 1;
+}
+
+// Create a Texture
+extern "C"
+int gr_texture_cmd(lua_State* L)
+{
+  GRLUA_DEBUG_CALL;
+
+  gr_material_ud* data = (gr_material_ud*)lua_newuserdata(L, sizeof(gr_material_ud));
+  data->material = 0;
+
+  const std::string file_name = std::string(luaL_checkstring(L, 1));
+
+  data->material = new Texture(file_name);
+
+  luaL_newmetatable(L, "gr.material");
+  lua_setmetatable(L, -2);
+
+  return 1;
+}
+
+
+// Create a Random Texture
+extern "C"
+int gr_random_texture_cmd(lua_State* L)
+{
+  GRLUA_DEBUG_CALL;
+
+  gr_material_ud* data = (gr_material_ud*)lua_newuserdata(L, sizeof(gr_material_ud));
+  data->material = 0;
+
+  double kd[3];
+  get_tuple(L, 1, kd, 3);
+
+  double freq = luaL_checknumber(L, 2);
+
+  data->material = new RandomTexture(glm::vec3(kd[0], kd[1], kd[2]), freq);
+
+  luaL_newmetatable(L, "gr.material");
+  lua_setmetatable(L, -2);
+
+  return 1;
+}
+
+// Create a wood Texture
+extern "C"
+int gr_wood_cmd(lua_State* L)
+{
+  GRLUA_DEBUG_CALL;
+
+  gr_material_ud* data = (gr_material_ud*)lua_newuserdata(L, sizeof(gr_material_ud));
+  data->material = 0;
+
+  double kd[3];
+  get_tuple(L, 1, kd, 3);
+
+  double freq = luaL_checknumber(L, 2);
+
+  data->material = new Wood(glm::vec3(kd[0], kd[1], kd[2]), freq);
+
+  luaL_newmetatable(L, "gr.material");
+  lua_setmetatable(L, -2);
+
+  return 1;
+}
+
+// Create a marble Texture
+extern "C"
+int gr_marble_cmd(lua_State* L)
+{
+  GRLUA_DEBUG_CALL;
+
+  gr_material_ud* data = (gr_material_ud*)lua_newuserdata(L, sizeof(gr_material_ud));
+  data->material = 0;
+
+  double kd[3];
+  get_tuple(L, 1, kd, 3);
+
+  double freq = luaL_checknumber(L, 2);
+  unsigned int octaves = luaL_checknumber(L, 3);
+  double gain = luaL_checknumber(L, 4);
+
+  data->material = new Marble(glm::vec3(kd[0], kd[1], kd[2]), freq, octaves, gain);
+
+  luaL_newmetatable(L, "gr.material");
+  lua_setmetatable(L, -2);
+
+  return 1;
+}
+
+// Create a bump map
+extern "C"
+int gr_bump_map_cmd(lua_State* L)
+{
+  GRLUA_DEBUG_CALL;
+
+  gr_material_ud* data = (gr_material_ud*)lua_newuserdata(L, sizeof(gr_material_ud));
+  data->material = 0;
+
+  const std::string file_name = std::string(luaL_checkstring(L, 1));
+
+  double kd[3], ks[3];
+  get_tuple(L, 2, kd, 3);
+  get_tuple(L, 3, ks, 3);
+
+  double shininess = luaL_checknumber(L, 4);
+
+  data->material = new BumpMap(file_name,
+                               glm::vec3(kd[0], kd[1], kd[2]),
+                               glm::vec3(ks[0], ks[1], ks[2]),
+                               shininess);
 
   luaL_newmetatable(L, "gr.material");
   lua_setmetatable(L, -2);
@@ -587,6 +741,11 @@ static const luaL_Reg grlib_functions[] = {
   {"joint", gr_joint_cmd},
   {"material", gr_material_cmd},
   {"trans_material", gr_transparent_material_cmd},
+  {"texture", gr_texture_cmd},
+  {"random_texture", gr_random_texture_cmd},
+  {"wood", gr_wood_cmd},
+  {"marble", gr_marble_cmd},
+  {"bump_map", gr_bump_map_cmd},
   // New for assignment 4
   {"cube", gr_cube_cmd},
   {"nh_sphere", gr_nh_sphere_cmd},
@@ -595,6 +754,7 @@ static const luaL_Reg grlib_functions[] = {
   {"cone", gr_cone_cmd},
   {"mesh", gr_mesh_cmd},
   {"light", gr_light_cmd},
+  {"area_light", gr_area_light_cmd},
   {"render", gr_render_cmd},
   {0, 0}
 };

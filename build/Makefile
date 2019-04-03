@@ -64,19 +64,25 @@ ifeq ($(config),release)
 endif
 
 OBJECTS := \
-	$(OBJDIR)/PhongMaterial.o \
-	$(OBJDIR)/polyroots.o \
 	$(OBJDIR)/A4.o \
-	$(OBJDIR)/Material.o \
-	$(OBJDIR)/SceneNode.o \
-	$(OBJDIR)/JointNode.o \
-	$(OBJDIR)/Primitive.o \
 	$(OBJDIR)/GeometryNode.o \
-	$(OBJDIR)/Light.o \
-	$(OBJDIR)/Mesh.o \
-	$(OBJDIR)/scene_lua.o \
 	$(OBJDIR)/Image.o \
+	$(OBJDIR)/JointNode.o \
+	$(OBJDIR)/Light.o \
 	$(OBJDIR)/Main.o \
+	$(OBJDIR)/Material.o \
+	$(OBJDIR)/Mesh.o \
+	$(OBJDIR)/PhongMaterial.o \
+	$(OBJDIR)/Primitive.o \
+	$(OBJDIR)/SceneNode.o \
+	$(OBJDIR)/polyroots.o \
+	$(OBJDIR)/scene_lua.o \
+	$(OBJDIR)/Texture.o \
+	$(OBJDIR)/BumpMap.o \
+	$(OBJDIR)/PerlinNoise.o \
+	$(OBJDIR)/RandomTexture.o \
+	$(OBJDIR)/Wood.o \
+	$(OBJDIR)/Marble.o \
 
 RESOURCES := \
 
@@ -137,43 +143,61 @@ $(GCH): $(PCH)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 endif
 
-$(OBJDIR)/PhongMaterial.o: ../PhongMaterial.cpp
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/polyroots.o: ../polyroots.cpp
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/A4.o: ../A4.cpp
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/Material.o: ../Material.cpp
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/SceneNode.o: ../SceneNode.cpp
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/JointNode.o: ../JointNode.cpp
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/Primitive.o: ../Primitive.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/GeometryNode.o: ../GeometryNode.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/Image.o: ../Image.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/JointNode.o: ../JointNode.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/Light.o: ../Light.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/Main.o: ../Main.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/Material.o: ../Material.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/Mesh.o: ../Mesh.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/PhongMaterial.o: ../PhongMaterial.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/Primitive.o: ../Primitive.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/SceneNode.o: ../SceneNode.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/polyroots.o: ../polyroots.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/scene_lua.o: ../scene_lua.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/Image.o: ../Image.cpp
+$(OBJDIR)/Texture.o: ../Texture.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-$(OBJDIR)/Main.o: ../Main.cpp
+$(OBJDIR)/BumpMap.o: ../BumpMap.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/PerlinNoise.o: ../PerlinNoise.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/RandomTexture.o: ../RandomTexture.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/Wood.o: ../Wood.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/Marble.o: ../Marble.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 

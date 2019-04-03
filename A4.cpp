@@ -4,16 +4,26 @@
 
 #include "A4.hpp"
 #include "PhongMaterial.hpp"
+#include "Texture.hpp"
+#include "BumpMap.hpp"
+#include "RandomTexture.hpp"
 #include <cmath>
 #include <thread>
 #include <list>
 #include <chrono>
 #include <ctime>
+#include <random>
+#include <iomanip>
 
 #define MULTI_THREAD
 #define REFLECTION
 #define REFRACTION
 #define SHOW_PROGRESS
+
+std::default_random_engine generator;
+std::uniform_real_distribution<double> distribution(0.0, 1.0);
+int pixels_done = 0;
+int total_pixels;
 
 glm::mat4 generate_dcs_to_world_mat(
 	uint width, uint height,
@@ -48,7 +58,51 @@ glm::mat4 generate_dcs_to_world_mat(
 	return world;
 }
 
+void perturb(glm::vec3 &v, glm::vec3 &p){
+	double x1 = distribution(generator);
+	double x2 = distribution(generator);
 
+	double alpha = glm::acos(pow(1 - x1, 1.0/1000.000));
+	double beta = 2 * M_PI * x2;
+
+	glm::vec3 n = glm::vec3(0, 1, v.y/v.z);
+	glm::mat4 R1 = glm::rotate(float(alpha), n);
+	glm::mat4 R2 = glm::rotate(float(beta), v);
+
+	p = glm::normalize(glm::vec3(R2 * R1 * glm::vec4(v, 0.0)));
+
+}
+
+void perturb(glm::vec3 &v, const float &du, const float &dv){
+	float theta;
+	if (v.x == 0 && v.z == 0){
+		theta = M_PI / 2;
+	}
+	else{
+		theta = glm::atan(-v.z, v.x);
+	}
+
+	glm::vec3 pu = glm::vec3(-sin(theta), 0, cos(theta));
+	glm::vec3 pv = glm::cross(v, pu);
+
+	v = v + (((du * pu) - (dv * pv)) / glm::dot(v, v));
+}
+
+void find_normals(glm::vec3 &v, glm::vec3 &n1, glm::vec3 &n2){
+	if(v.x == 0){
+		n1 = glm::vec3(1, 0, 0);
+	}
+	else if(v.y == 0){
+		n1 = glm::vec3(0, 1, 0);
+	}
+	else if(v.z == 0){
+		n1 = glm::vec3(0, 0, 1);
+	}
+	else{
+		n1 = glm::normalize(glm::vec3(0, 1, v.y/v.z));
+	}
+	n2 = glm::normalize(glm::cross(v, n1));
+}
 
 bool ray_color(
 	SceneNode* scene,
@@ -62,167 +116,163 @@ bool ray_color(
 
   glm::vec3 normal;
   double t;
-
-  glm::vec3 kd;
-  glm::vec3 ks;
-  double shininess;
-
-  bool transparency;
-  double ior;
+	PhongMaterial mat;
 
 	glm::mat4 world_to_model = glm::mat4();
 	bool ray_intersection = false;
-	hit(scene, eye, ray_direction, world_to_model, t, normal, kd, ks, shininess, transparency, ior, ray_intersection);
+	hit(scene, eye, ray_direction, world_to_model, t, normal, mat, ray_intersection);
 
 	if(ray_intersection) {
-    col[0] = kd[0] * ambient[0];
-    col[1] = kd[1] * ambient[1];
-    col[2] = kd[2] * ambient[2];
+    col[0] = mat.m_kd[0] * ambient[0];
+    col[1] = mat.m_kd[1] * ambient[1];
+    col[2] = mat.m_kd[2] * ambient[2];
 
     glm::vec3 point_of_intersection = eye + (float(t) * ray_direction);
-    glm::vec3 dummy_normal, dummy_kd, dummy_ks;
-    double dummy_t, dummy_shininess, dummy_ior;
-    bool dummy_transparency;
+    glm::vec3 dummy_normal;
+    double dummy_t;
+    PhongMaterial dummy_mat;
 
     // loop over light sources to check for shadows
     for (Light *light: lights) {
-      glm::vec3 l = light->position - point_of_intersection;
-      double dist_to_light = glm::length(l);
-      double attenuation = light->falloff[0];
-      attenuation += (light->falloff[1] * dist_to_light);
-      attenuation += (light->falloff[2] * dist_to_light * dist_to_light);
-      glm::vec3 I_in = float(1 / attenuation) * light->colour;
-      l = glm::normalize(l);
+      glm::vec3 d = light->position - point_of_intersection;
+    	glm::vec3 d1, d2, total_color;
+    	find_normals(d, d1, d2);
+    	d1 = float(light->separation) * d1;
+			d2 = float(light->separation) * d2;
+    	for(int i = 0; i < light->size; i++) {
+				for (int j = 0; j < light->size; j++) {
+					glm::vec3 l = d + (float(i) * d1) + (float(j) * d2);
+					double dist_to_light = glm::length(l);
+					double attenuation = light->falloff[0];
+					attenuation += (light->falloff[1] * dist_to_light);
+					attenuation += (light->falloff[2] * dist_to_light * dist_to_light);
+					glm::vec3 I_in = float(1 / attenuation) * light->colour;
+					l = glm::normalize(l);
 
-      // dummy values to pass to hit, however their values aren't needed
-      ray_intersection = false;
-      bool light_blocked = hit(
-              scene,
-              point_of_intersection,
-              l,
-              world_to_model,
-              dummy_t,
-              dummy_normal,
-              dummy_kd,
-              dummy_ks,
-              dummy_shininess,
-              dummy_transparency,
-              dummy_ior,
-              ray_intersection);
+					// dummy values to pass to hit, however their values aren't needed
+					ray_intersection = false;
+					bool light_blocked = hit(scene, point_of_intersection, l, world_to_model, dummy_t, dummy_normal, dummy_mat, ray_intersection);
 
-      if (!light_blocked) {
-        // shoot a ray from POI to light source, if that ray intersects with an object
-        // on the way then that light source is blocked and shadow will be casted
+					if (!light_blocked) {
+						// shoot a ray from POI to light source, if that ray intersects with an object
+						// on the way then that light source is blocked and shadow will be casted
 
-        glm::vec3 v = normalize(eye - point_of_intersection);
-        glm::vec3 r = glm::normalize(-l + (2 * glm::dot(l, normal)) * normal);
-        double l_dot_n = glm::dot(l, normal);
-        double r_dot_v_to_p = std::pow(glm::dot(r, v), shininess);
+						glm::vec3 v = normalize(eye - point_of_intersection);
+						glm::vec3 r = glm::normalize(-l + (2 * glm::dot(l, normal)) * normal);
+						double l_dot_n = glm::dot(l, normal);
+						double r_dot_v_to_p = std::pow(glm::dot(r, v), mat.m_shininess);
 
-        col[0] += std::max(0.0, std::min(1.0, (kd[0] * l_dot_n * I_in[0]) + (ks[0] * r_dot_v_to_p * I_in[0])));
-        col[1] += std::max(0.0, std::min(1.0, (kd[1] * l_dot_n * I_in[1]) + (ks[1] * r_dot_v_to_p * I_in[1])));
-        col[2] += std::max(0.0, std::min(1.0, (kd[2] * l_dot_n * I_in[2]) + (ks[2] * r_dot_v_to_p * I_in[2])));
-      }
+						total_color[0] += std::max(0.0, std::min(1.0, (mat.m_kd[0] * l_dot_n * I_in[0]) + (mat.m_ks[0] * r_dot_v_to_p * I_in[0])));
+						total_color[1] += std::max(0.0, std::min(1.0, (mat.m_kd[1] * l_dot_n * I_in[1]) + (mat.m_ks[1] * r_dot_v_to_p * I_in[1])));
+						total_color[2] += std::max(0.0, std::min(1.0, (mat.m_kd[2] * l_dot_n * I_in[2]) + (mat.m_ks[2] * r_dot_v_to_p * I_in[2])));
+					}
+				}
+			}
+
+    	col += float(1.0 / (light->size * light->size)) * total_color;
     }
 
 
     #ifdef REFLECTION
     // if reflection option is enabled and we haven't done all our recursive rays yet then we send another one
 		glm::vec3 reflected_color = glm::vec3(0.0);
-    if(remaining_bounces > 0)
-    {
-      glm::vec3 reflected = glm::normalize(ray_direction - 2*glm::dot(ray_direction, normal)* normal);
-      bool reflect_ray_intersection = false;
+		glm::vec3 reflected = reflect(ray_direction, normal);
+    if(remaining_bounces > 0) {
+      if(glm::dot(mat.m_ks, mat.m_ks)) {
+        if (mat.m_glossy) {
+          int glossy_rays = 4;
+          int intersected_rays = 0;
+          glm::vec3 perturbed_reflected;
+          glm::vec3 color_part;
+          bool reflect_ray_intersection;
 
-      reflect_ray_intersection = ray_color
-							(
-											scene,
-											point_of_intersection, reflected,
-											ambient, lights,
-											reflected_color,
-											remaining_bounces - 1
-							);
-    }
+          for (int i = 0; i < glossy_rays; i++) {
+            perturb(reflected, perturbed_reflected);
+            color_part = glm::vec3(0.0f);
 
-    #ifdef REFRACTION
-    if (transparency) {
-      // * we should send a reflective ray here as well but I am not going to worry about this right now*
+            reflect_ray_intersection = ray_color(scene, point_of_intersection, perturbed_reflected, ambient, lights,
+                                                 color_part, remaining_bounces - 1);
 
-      // the end goal we want to find the ray coming out of our object and get the color of that
-      // theta is the angle between the incident ray the normal
-      // cos phi is the angle between the normal and the refracted ray
-      double cos_theta = glm::dot(ray_direction, normal);
-      if (cos_theta < 0) {
-        // ray entering the object
-        double cos_phi_sq = 1 - ((1 - cos_theta * cos_theta) / ior);
-
-        if (cos_phi_sq >= 0) {
-          // not a complete internal refraction
-          // refracted = sin_phi * b - normal * cos_phi where b along with normal form an
-          // orthonormal basis to the plane containing the the incident ray and the normal
-          glm::vec3 transmitted = ((ray_direction - (normal * float(cos_theta))) / float(ior)) -
-                                  (normal * float(sqrt(cos_phi_sq)));
-
-          // the ratio to blend reflection and refraction
-          double r0 = ((ior - 1) / (ior + 1)) * ((ior - 1) / (ior + 1));
-          double r_theta = r0 + ((1 - r0) * pow((1 - cos_theta), 5));
-
-          glm::mat4 trans_model;
-          glm::vec3 trans_norm;
-          double trans_t = 0;
-          glm::vec3 trans_kd;
-          glm::vec3 trans_ks;
-          double trans_shininess;
-          bool trans_transparency;
-          double trans_ior;
-          bool trans_ray_intersection = false;
-          glm::vec3 trans_color = glm::vec3(0.0);
-
-          // we need to find where this refracted ray exits the object from which point we will send another ray to
-          // get us the colour refracted through our object
-          // so we cast the refracted ray from the point of intersection to find it's point of exit
-          bool reflected_ray_exits = hit(
-                  scene,
-                  point_of_intersection,
-                  transmitted,
-                  trans_model,
-                  trans_t,
-                  trans_norm,
-                  trans_kd,
-                  trans_ks,
-                  trans_shininess,
-                  trans_transparency,
-                  trans_ior,
-                  trans_ray_intersection);
-
-          if (reflected_ray_exits) {
-            // this should always be true
-            glm::vec3 exit_point = point_of_intersection + float(trans_t) * transmitted;
-
-            // the exiting ray has the same direction as the entering ray just a different origin
-            // we want the colour of the exiting ray
-            ray_color(
-                    scene,
-                    exit_point, transmitted,
-                    ambient, lights,
-                    trans_color,
-                    remaining_bounces - 1
-            );
-
-						glm::vec3 total_color = 0.5f * ((float(r_theta) + reflected_color) + (float(1 - r_theta) + trans_color));
-            col[0] += std::max(0.0f, std::min(1.0f, ks[0] * total_color[0]));
-            col[1] += std::max(0.0f, std::min(1.0f, ks[1] * total_color[1]));
-            col[2] += std::max(0.0f, std::min(1.0f, ks[2] * total_color[2]));
-
+            if (reflect_ray_intersection) {
+              reflected_color += color_part;
+              intersected_rays++;
+            }
           }
+
+          if (intersected_rays > 0) {
+            reflected_color = float(1.0 / (2 * intersected_rays)) * reflected_color;
+          }
+        } else {
+          ray_color(scene, point_of_intersection, reflected, ambient, lights,
+                    reflected_color, remaining_bounces - 1);
+          reflected_color = 0.5f * reflected_color;
         }
+
+        reflected_color[0] *= mat.m_ks[0];
+        reflected_color[1] *= mat.m_ks[1];
+        reflected_color[2] *= mat.m_ks[2];
       }
-    }
-    else {
-			reflected_color = 0.5f * reflected_color;
-			col[0] += std::max(0.0f, std::min(1.0f, ks[0] * reflected_color[0]));
-			col[1] += std::max(0.0f, std::min(1.0f, ks[1] * reflected_color[1]));
-			col[2] += std::max(0.0f, std::min(1.0f, ks[2] * reflected_color[2]));
+
+#ifdef REFRACTION
+			if (mat.m_transparent) {
+				// * we should send a reflective ray here as well but I am not going to worry about this right now*
+
+				// the end goal we want to find the ray coming out of our object and get the color of that
+				// theta is the angle between the incident ray the normal
+				// cos phi is the angle between the normal and the refracted ray
+				glm::vec3 transmitted;
+				glm::vec3 trans_color = glm::vec3(0.0);
+				double cos_theta = glm::dot(ray_direction, normal);
+				double eta = mat.m_ior;
+				if (cos_theta < 0) {
+					cos_theta *= -1.0;
+					eta = 1.0/eta;
+					transmitted = glm::refract(ray_direction, normal, float(eta));
+				}
+				else {
+					transmitted = glm::refract(ray_direction, -normal, float(eta));
+				}
+				// ray entering the object
+				double cos_phi_sq = 1.0 - ((1.0 - cos_theta * cos_theta) / eta);
+				// the ratio to blend reflection and refraction
+				double r0 = ((eta - 1.0) / (eta + 1.0)) * ((eta - 1.0) / (eta + 1.0));
+				double r_theta = r0 + ((1.0 - r0) * pow((1.0 - cos_theta), 5));
+				if (cos_phi_sq >= 0) {
+					// we need to find where this refracted ray exits the object from which point we will send another ray to
+					// get us the colour refracted through our object
+					// so we cast the refracted ray from the point of intersection to find it's point of exit
+					if(mat.m_glossy){
+						int glossy_rays = 4;
+						glm::vec3 perturbed_transmitted;
+						glm::vec3 color_part;
+
+						for (int i = 0; i < glossy_rays; i++) {
+							perturb(transmitted, perturbed_transmitted);
+							color_part = glm::vec3(0.0f);
+
+							ray_color(scene, point_of_intersection, perturbed_transmitted, ambient, lights, color_part, remaining_bounces - 1);
+							trans_color += color_part;
+						}
+
+						trans_color = float(1.0 / glossy_rays) * trans_color;
+					}
+					else {
+						ray_color(scene, point_of_intersection, transmitted, ambient, lights, trans_color, remaining_bounces - 1);
+					}
+					trans_color[0] *= mat.m_kt[0];
+					trans_color[1] *= mat.m_kt[1];
+					trans_color[2] *= mat.m_kt[2];
+
+				}
+				glm::vec3 total_color = ((float(r_theta) * reflected_color) + (float(1 - r_theta) * trans_color));
+				col[0] += std::max(0.0f, std::min(1.0f, total_color[0]));
+				col[1] += std::max(0.0f, std::min(1.0f, total_color[1]));
+				col[2] += std::max(0.0f, std::min(1.0f, total_color[2]));
+			} else {
+				col[0] += std::max(0.0f, std::min(1.0f, reflected_color[0]));
+				col[1] += std::max(0.0f, std::min(1.0f, reflected_color[1]));
+				col[2] += std::max(0.0f, std::min(1.0f, reflected_color[2]));
+			}
 		}
     #endif
 		#endif
@@ -250,11 +300,7 @@ bool hit(
 	const glm::mat4 &world_to_model,
 	double &ray_closest_t,
 	glm::vec3 &intersection_normal,
-	glm::vec3 &kd,
-	glm::vec3 &ks,
-	double &shininess,
-	bool &transparency,
-	double &ior,
+	PhongMaterial &mat,
 	bool &ray_intersection
 ){
 	glm::mat4 world_to_new_model = scene->get_inverse() * world_to_model;
@@ -265,23 +311,58 @@ bool hit(
 	// decide the color of the pixel
 	// get ray color generated from eye going through pixel
 	if(scene->m_nodeType == NodeType::GeometryNode){
-		GeometryNode *gn = static_cast<GeometryNode*>(scene);
+		auto *gn = dynamic_cast<GeometryNode*>(scene);
 		double t;
 		glm::vec3 normal;
-		bool intersection = gn->m_primitive->intersect(ray_origin_in_model, ray_direction_in_model, t, normal);
+		glm::vec2 uv;
+		bool intersection = gn->m_primitive->intersect(ray_origin_in_model, ray_direction_in_model, t, normal, uv);
 		if(intersection){
 			// std::cout << "GeometryChild" << std::endl;
 			// std::cout << child->m_name << std::endl;
 			if(!ray_intersection or t < ray_closest_t){
 				ray_intersection = true;
 				ray_closest_t = t;
+				if(auto* phong_mat = dynamic_cast<PhongMaterial *>(gn->m_material)){
+					mat.m_kd = phong_mat->m_kd;
+					mat.m_ks = phong_mat->m_ks;
+					mat.m_kt = phong_mat->m_kt;
+					mat.m_shininess = phong_mat->m_shininess;
+					mat.m_transparent = phong_mat->m_transparent;
+					mat.m_glossy = phong_mat->m_glossy;
+					mat.m_ior = phong_mat->m_ior;
+				}
+				else if(auto *texture = dynamic_cast<Texture *>(gn->m_material)){
+					texture->getColor(uv.x, uv.y, mat.m_kd);
+					mat.m_ks = glm::vec3(0.0);
+					mat.m_kt = glm::vec3(0.0);
+					mat.m_shininess = 0;
+					mat.m_transparent = false;
+					mat.m_glossy = false;
+					mat.m_ior = 0;
+				}
+				else if(auto *bump_map = dynamic_cast<BumpMap *>(gn->m_material)) {
+					glm::vec2 derivatives;
+					bump_map->get_derivatives(uv.x, uv.y, derivatives);
+					perturb(normal, derivatives.x, derivatives.y);
+					mat.m_kd = bump_map->m_kd;
+					mat.m_ks = bump_map->m_ks;
+					mat.m_kt = glm::vec3(0.0);
+					mat.m_shininess = bump_map->m_shininess;
+					mat.m_transparent = false;
+					mat.m_glossy = false;
+					mat.m_ior = 0;
+				}
+				else if(auto *random_texture = dynamic_cast<RandomTexture *>(gn->m_material)) {
+				  glm::vec3 poi = ray_origin + float(t) * ray_direction;
+					random_texture->getColor(poi, uv, mat.m_kd);
+					mat.m_ks = glm::vec3(0.0);
+					mat.m_kt = glm::vec3(0.0);
+					mat.m_shininess = 0;
+					mat.m_transparent = false;
+					mat.m_glossy = false;
+					mat.m_ior = 0;
+				}
 				intersection_normal = glm::normalize(glm::vec3(glm::transpose(world_to_new_model) * glm::vec4(normal, 0.0)));
-				PhongMaterial* phong_mat = static_cast<PhongMaterial *>(gn->m_material);
-				kd = phong_mat->m_kd;
-				ks = phong_mat->m_ks;
-				shininess = phong_mat->m_shininess;
-				transparency = phong_mat->m_transparent;
-				ior = phong_mat->m_ior;
 			}
 			//set pixel to color of object
 		}
@@ -290,7 +371,7 @@ bool hit(
 		// recurse on other children 
 		for(SceneNode *child: scene->children){
 			hit(child, ray_origin_in_model, ray_direction_in_model, world_to_new_model,
-				ray_closest_t, intersection_normal, kd, ks, shininess, transparency, ior, ray_intersection);
+				ray_closest_t, intersection_normal, mat, ray_intersection);
 		}
 	}
 	return ray_intersection;
@@ -342,6 +423,10 @@ void set_segment(
 			lights
 			);
 		}
+#ifdef SHOW_PROGRESS
+		pixels_done += (xend - xstart);
+		std::cout << "\r" << std::fixed << std::setprecision(2) << ((float(pixels_done) / total_pixels) * 100) << "% done";
+#endif
 	}
 }
 
@@ -385,11 +470,12 @@ void A4_Render(
 
 	size_t h = image.height();
 	size_t w = image.width();
+	total_pixels = w * h;
 	int d = glm::length(view);
 
 	glm::mat4 dcs_to_world = generate_dcs_to_world_mat(w, h, d, fovy, eye, view, up);
 
-	int y_threads = 64;
+	int y_threads = 256;
 	int x_threads = 1;
 	std::thread my_threads[y_threads][x_threads];
 	glm::vec3 *image_array = new glm::vec3[h*w];
@@ -430,9 +516,6 @@ void A4_Render(
 			);
 			#endif
 		}
-		#ifdef SHOW_PROGRESS
-		std::cout << "\r" << i * x_threads << " threads spun";
-		#endif
 	}
 #ifdef SHOW_PROGRESS
 	std::cout << std::endl << "All threads spinning" << std::endl;
@@ -444,11 +527,8 @@ void A4_Render(
 			if(my_threads[i][j].joinable()){
 				my_threads[i][j].join();
 			}
-		}
-		#ifdef SHOW_PROGRESS
-			std::cout << "\r" << i * x_threads << " Threads done";
-		#endif
-	}
+    }
+  }
 	std::cout << std::endl << "Scene was rendered using multi-threading" << std::endl;
 #endif
 #ifdef REFLECTION
